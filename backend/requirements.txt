@@ -1,0 +1,8 @@
+# Backend core
+fastapi
+uvicorn[standard]
+
+# LLM related
+langchain
+langchain-openai
+langchain-core
