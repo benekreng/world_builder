@@ -1,0 +1,95 @@
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+develop-eggs/
+.installed.cfg
+*.manifest
+*.spec
+
+# -----------------------------
+# Virtual Environments
+# -----------------------------
+venv/
+.env/
+.env.*/
+.venv/
+.venv*/
+ENV/
+env/
+env.*/
+pip-wheel-metadata/
+pip-log.txt
+
+# -----------------------------
+# Jupyter Notebooks
+# -----------------------------
+.ipynb_checkpoints/
+.jupyter/
+*.nbconvert.ipynb
+*.ipynb~
+*.nbconvert/
+.notebook-cache/
+.jupytext.toml
+
+# -----------------------------
+# FastAPI / Uvicorn / Logs
+# -----------------------------
+*.log
+logs/
+*.pid
+uvicorn.log
+gunicorn.log
+
+# -----------------------------
+# LangChain / Caching / Data
+# -----------------------------
+cache/
+langchain.db
+*.sqlite
+*.jsonl
+*.csv
+*.pkl
+*.parquet
+tmp/
+temp/
+data/
+datasets/
+chroma/
+vectorstore/
+*.faiss
+*.bin
+
+# -----------------------------
+# VSCode / Editors
+# -----------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# -----------------------------
+# OS Files
+# -----------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -----------------------------
+# Environment / Secrets
+# -----------------------------
+.env
+*.env
+secrets.json
+api_keys.json
+
+
