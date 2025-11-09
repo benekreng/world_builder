@@ -1,0 +1,80 @@
+.prompt-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+/* Textarea base */
+.prompt-input {
+  flex: 1;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  font-family: inherit;
+  line-height: 1.4;
+  resize: none;              /* we control size via toggle */
+  min-height: 40px;
+  max-height: 100px;         /* compact mode */
+  overflow-y: auto;
+  outline: none;
+}
+
+.prompt-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+/* When expanded */
+.prompt-bar--expanded .prompt-input {
+  max-height: 40vh;          /* big, readable */
+  min-height: 140px;
+}
+
+/* Right-side buttons container */
+.prompt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+
+/* Expand button */
+.prompt-expand {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #4b5563;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s;
+}
+
+.prompt-expand:hover {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+}
+
+/* Send button */
+.prompt-send {
+  padding: 0.6rem 1.3rem;
+  border-radius: 999px;
+  border: none;
+  background-color: #111827;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, transform 0.05s ease;
+}
+
+.prompt-send:hover {
+  background-color: #0f172a;
+}
+
+.prompt-send:active {
+  transform: scale(0.97);
+}

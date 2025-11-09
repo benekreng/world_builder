@@ -1,0 +1,116 @@
+.style-panel {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: #ffffff;
+
+  /* Add these 👇 */
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+
+.style-panel-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.style-panel-subtitle {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* On wider screens, show 2 columns like your reference tiles */
+@media (min-width: 900px) {
+  .style-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tile button reset */
+.style-tile {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* similar proportions to your reference */
+  padding: 0;
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.style-tile-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.9);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.style-tile-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.55rem 0.7rem;
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.78),
+    rgba(15, 23, 42, 0.15)
+  );
+  color: #f9fafb;
+  height: 100%;
+}
+
+.style-tile-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.1rem;
+}
+
+.style-tile-description {
+  font-size: 0.7rem;
+  opacity: 0.9;
+}
+
+/* Hover/active */
+.style-tile:hover .style-tile-bg {
+  filter: brightness(1);
+  transform: scale(1.03);
+}
+
+.style-tile:hover {
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  transform: translateY(-2px);
+}
+
+.style-tile--active {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+.style-tile--active .style-tile-label {
+  color: #bfdbfe;
+}
