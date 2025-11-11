@@ -1,8 +1,7 @@
 # main.py
 import asyncio
-
-class WorldState:
-    def __init__(self):
+# class WorldState:
+#     def __init__(self):
 
 
 class WorldBuilder:
