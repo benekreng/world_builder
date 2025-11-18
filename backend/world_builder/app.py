@@ -1,12 +1,13 @@
 # main.py
 import asyncio
+from .router import LLMService 
 # class WorldState:
 #     def __init__(self):
-
 
 class WorldBuilder:
     def __init__(self):
         self._running = False
+        self.r = LLMService()
 
     async def start(self):
         self._running = True
@@ -15,6 +16,7 @@ class WorldBuilder:
         self._running = False 
 
     async def test_async(self):
+        self.r.get_model("openai/gpt-5-mini")
         await asyncio.sleep(1)
 
     # creates new world from scratch
