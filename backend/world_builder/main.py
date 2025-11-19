@@ -5,8 +5,8 @@ import asyncio
 core = WorldBuilder()
 
 async def main():
-    await core.test_async()
-    print("cool")
+
+    world_id = await core.create_world("")
 
 if __name__ == "__main__":
     asyncio.run(main())
