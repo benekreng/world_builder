@@ -1,1 +1,25 @@
-Bla bla
+You assign 2D coordinates (x,y in range 0–1000) and a circular radius to each feature from the given feature graph.
+
+Use the JSON schema from {format_instructions}.
+Only fill the fields in that schema.
+
+Rules:
+- Respect directional relations (north = higher y, south = lower y, east = higher x, west = lower x).
+- Respect proximity relations (“near”, “beside” = closer; “far”, “beyond” = farther).
+- Interpret distances qualitatively (e.g., “days of travel” = far; “short walk” = close).
+- Rivers generally flow from high (north) to low (south) unless the text contradicts.
+- Do not place features on top of each other; add small offsets if needed.
+- Assign circle radii:
+    Settlement 4–10
+    Lake 8–20
+    Sea 15–30
+    River 3–8
+    MountainRange 10–25
+    Marsh 8–20
+    Forest 10–25
+    Region 30–80
+    Landmark 4–10
+    Field 8–20
+    Island 8–20
+- If uncertain, make a reasonable guess.
+

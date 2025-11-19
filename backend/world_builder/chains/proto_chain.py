@@ -6,8 +6,8 @@ from ..models import CoordinateUpdateModel
 import json
 
 PROMPT_DIR = Path(__file__).parent.parent / "prompts"
-EXTRACT_GEO_RELATIONS = (PROMPT_DIR / "extract_features.prompt").read_text()
-EXTRACT_COORDINATES = (PROMPT_DIR / "extract_coordinates.prompt").read_text()
+EXTRACT_GEO_RELATIONS = (PROMPT_DIR / "extract_geo_relations.prompt").read_text()
+EXTRACT_COORDINATES = (PROMPT_DIR / "coodinate_update_step.prompt").read_text()
 
 class ExtractGeoRelations:
     def __init__(self, llm):
@@ -20,10 +20,10 @@ class ExtractGeoRelations:
             partial_variables={"format_instructions": self.parser.get_format_instructions()}
         )
 
-    def run(self, world_state_text: str) ->  ExtractFeatureGraph:
+    async def run(self, world_state_text: str) ->  ExtractFeatureGraph:
         final_prompt = self.prompt.format(world_state_text=world_state_text)
-        response = self.llm.invoke(final_prompt)
-        return self.parser.parse(response)
+        response = await self.llm.ainvoke(final_prompt)
+        return self.parser.parse(response.content)
 
 class CoordinateUpdateStep:
     def __init__(self, llm):
@@ -40,10 +40,10 @@ class CoordinateUpdateStep:
             partial_variables={"format_instructions": self.parser.get_format_instructions()}
         )
 
-    def run(self, geo_relation_graph: str, world_state_text: str) ->  CoordinateUpdateModel:
+    async def run(self, geo_relation_graph: str, world_state_text: str) ->  CoordinateUpdateModel:
         final_prompt = self.prompt.format(geo_relation_graph=geo_relation_graph, world_state_text=world_state_text)
-        response = self.llm.invoke(final_prompt)
-        return self.parser.parse(response)
+        response = await self.llm.ainvoke(final_prompt)
+        return self.parser.parse(response.content)
 
 
 # Merge ExtractFeatureGraph with coordinates from coordinateupdatestep into finalfeaturegraph 
@@ -89,11 +89,13 @@ class MapPipeline:
         self.extract_geo_relations = ExtractGeoRelations(llm)
         self.coordinate_update_step = CoordinateUpdateStep(llm)
     
-    def run(self, world_state_text):
-        geo_relation_graph = self.extract_geo_relations.run(world_state_text)
-        coord_updates = self.coordinate_update_step.run(geo_relation_graph.model_dump_json(), world_state_text)
-        # TODO: extract world_state_text at the same time as coordinate_update_setp
+    async def run(self, world_state_text):
+        print("Extracting Geo Features...")
+        geo = await self.extract_geo_relations.run(world_state_text)
+        print("Update coordinates...")
+        coord_updates = await self.coordinate_update_step.run(geo.model_dump_json(), world_state_text)
+        # TODO: update world_state_text at the same time as coordinate_update_setp
 
-        final_feature_graph = promote_extracted_to_final(geo_relation_graph)
+        final_feature_graph = promote_extracted_to_final(geo)
         final_graph = apply_coordinate_updates(final_feature_graph, coord_updates)
-        print(json.dumps(final_graph.model_dump(), indent=4))
+        return final_graph

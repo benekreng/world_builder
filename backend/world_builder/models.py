@@ -5,13 +5,15 @@ Category = Literal[
     "Settlement",
     "River",
     "Lake",
+    "Sea",
     "MountainRange",
     "Road",
     "Marsh",
     "Forest",
     "Region",
     "Landmark",
-    "Field"
+    "Field",
+    "Island"
 ]
 
 RelationType = Literal[
@@ -22,8 +24,12 @@ RelationType = Literal[
     "near",
     "adjacent_to",
     "distance",
+    "flows_from",
     "flows_into",
+    "flows_to",
     "part_of",
+    "contains",
+    "within",
     "between"
 ]
 

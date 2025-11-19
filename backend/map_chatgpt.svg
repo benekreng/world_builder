@@ -1,0 +1,441 @@
+<svg width="1000" height="1000" 
+            viewBox="0 0 1000 1000" 
+            xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="#f8f8f8"/>
+        
+                <circle 
+                    cx="500.0" cy="500.0" r="60.0" 
+                    fill="#cccccc" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="565.0" 
+                    y="505.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Vale of Thareth
+                </text>
+            
+
+                <circle 
+                    cx="500.0" cy="850.0" r="20.0" 
+                    fill="#996633" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="525.0" 
+                    y="855.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Glimmerstone Peaks
+                </text>
+            
+
+                <circle 
+                    cx="500.0" cy="200.0" r="50.0" 
+                    fill="#cccccc" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="555.0" 
+                    y="205.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Serran Floodplain
+                </text>
+            
+
+                <circle 
+                    cx="400.0" cy="500.0" r="6.0" 
+                    fill="#4da6ff" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="411.0" 
+                    y="505.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Thareth River
+                </text>
+            
+
+                <circle 
+                    cx="250.0" cy="480.0" r="8.0" 
+                    fill="#ffcc00" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="263.0" 
+                    y="485.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Thareth’s Gate
+                </text>
+            
+
+                <circle 
+                    cx="240.0" cy="500.0" r="6.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="251.0" 
+                    y="505.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Spirefort
+                </text>
+            
+
+                <circle 
+                    cx="400.0" cy="480.0" r="7.0" 
+                    fill="#ffcc00" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="412.0" 
+                    y="485.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Cendara
+                </text>
+            
+
+                <circle 
+                    cx="410.0" cy="470.0" r="6.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="421.0" 
+                    y="475.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Ruins of Othiriel
+                </text>
+            
+
+                <circle 
+                    cx="520.0" cy="880.0" r="5.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="530.0" 
+                    y="885.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Hearthwind Pass
+                </text>
+            
+
+                <circle 
+                    cx="540.0" cy="820.0" r="8.0" 
+                    fill="#ffcc00" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="553.0" 
+                    y="825.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Veylen
+                </text>
+            
+
+                <circle 
+                    cx="420.0" cy="520.0" r="4.0" 
+                    fill="#4da6ff" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="429.0" 
+                    y="525.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Lune River
+                </text>
+            
+
+                <circle 
+                    cx="360.0" cy="520.0" r="7.0" 
+                    fill="#ffcc00" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="372.0" 
+                    y="525.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Woaden Ford
+                </text>
+            
+
+                <circle 
+                    cx="440.0" cy="600.0" r="15.0" 
+                    fill="#66ccff" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="460.0" 
+                    y="605.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Mirror Lakes
+                </text>
+            
+
+                <circle 
+                    cx="415.0" cy="465.0" r="18.0" 
+                    fill="#228b22" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="438.0" 
+                    y="470.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    oak forest
+                </text>
+            
+
+                <circle 
+                    cx="470.0" cy="460.0" r="15.0" 
+                    fill="#669900" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="490.0" 
+                    y="465.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    The Blackfen
+                </text>
+            
+
+                <circle 
+                    cx="150.0" cy="480.0" r="6.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="161.0" 
+                    y="485.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Whispering Bridge
+                </text>
+            
+
+                <circle 
+                    cx="500.0" cy="300.0" r="12.0" 
+                    fill="#b3d9b3" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="517.0" 
+                    y="305.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Emberfields
+                </text>
+            
+
+                <circle 
+                    cx="510.0" cy="320.0" r="6.0" 
+                    fill="#ffcc00" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="521.0" 
+                    y="325.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Ashmere
+                </text>
+            
+
+                <circle 
+                    cx="380.0" cy="490.0" r="5.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="390.0" 
+                    y="495.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Stonefather’s Step
+                </text>
+            
+
+                <circle 
+                    cx="360.0" cy="525.0" r="5.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="370.0" 
+                    y="530.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    Market of Broken Blades
+                </text>
+            
+
+                <circle 
+                    cx="260.0" cy="720.0" r="6.0" 
+                    fill="#ff6699" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="271.0" 
+                    y="725.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    mountain passes
+                </text>
+            
+
+                <circle 
+                    cx="700.0" cy="480.0" r="40.0" 
+                    fill="#cccccc" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="745.0" 
+                    y="485.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    open plain
+                </text>
+            
+
+                <circle 
+                    cx="700.0" cy="150.0" r="25.0" 
+                    fill="#0099ff" 
+                    stroke="#333" 
+                    stroke-width="1"
+                    fill-opacity="0.8"
+                />
+            
+
+                <text 
+                    x="730.0" 
+                    y="155.0" 
+                    font-size="12" 
+                    font-family="Arial, sans-serif"
+                    fill="#222">
+                    sea
+                </text>
+            </svg>

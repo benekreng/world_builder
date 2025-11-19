@@ -1,6 +1,28 @@
 from langchain_openai import ChatOpenAI
 import os
 import yaml
+from typing import Optional
+
+# class ChatOpenRouter(ChatOpenAI):
+#     def __init__(
+#         self,
+#         model_name: str,
+#         api_key: Optional[str] = None,
+#         base_url: str = "https://openrouter.ai/api/v1",
+#         **kwargs
+#     ):
+#         api_key = api_key or os.getenv("OPEN_ROUTER_API_KEY")
+
+#         if api_key is None:
+#             raise ValueError("Missing OpenRouter API key")
+
+#         super().__init__(
+#             model=model_name,
+#             api_key=api_key,
+#             base_url=base_url,
+#             streaming=False,
+#             **kwargs
+#         )
 
 # Wrapper for all models we may select
 class LLMService:
@@ -27,10 +49,20 @@ class LLMService:
         print(f'loading: {model_provider}')
         if model_provider == "open_router":
             self._clients[model_name] = ChatOpenAI(
+                model=model_name,
                 api_key=self.open_router_key,
                 base_url="https://openrouter.ai/api/v1",
-                model=model_name
+                streaming=False,
+                default_headers={"X-OpenAI-Stream": "false", "max_output_tokens": "9123"},
+                model_kwargs={"stream": False},
+                timeout=20,
+                max_retries=1
             )
+
+            # self._clients[model_name] = ChatOpenRouter(
+            #     model_name=model_name,
+            #     openai_api_key = self.open_router_key
+            #)
         # later for super fast inference (if needed)
         # elif model_provider == "groq":
             # llm = ChatGroq(
