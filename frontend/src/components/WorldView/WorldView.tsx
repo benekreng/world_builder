@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { mockWorld, type World } from "./mockWorld";
+import { type World } from "./mockWorld";
 import type { WorldStyle } from "../../App";
 import "./WorldView.css";
 
@@ -8,23 +8,20 @@ interface WorldViewProps {
   world: World | null;
   loading: boolean;
   error: string | null;
+  lastPrompt: string | null;
 }
 
 export const WorldView: React.FC<WorldViewProps> = ({
   styleVariant,
   world,
   loading,
-  error,
-}) => {
+  error}) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [tileSize, setTileSize] = useState(24);
 
-  // use mockWorld as fallback until backend exists
-  const displayWorld: World | null = world ?? mockWorld;
-
   // Recalculate tile size whenever world or container size changes
   useEffect(() => {
-    if (!displayWorld) return;
+    if (!world) return;
 
     const updateTileSize = () => {
       const el = containerRef.current;
@@ -39,8 +36,8 @@ export const WorldView: React.FC<WorldViewProps> = ({
 
       const size = Math.floor(
         Math.min(
-          availableWidth / displayWorld.width,
-          availableHeight / displayWorld.height
+          availableWidth / world.width,
+          availableHeight / world.height
         )
       );
 
@@ -51,7 +48,7 @@ export const WorldView: React.FC<WorldViewProps> = ({
     updateTileSize();
     window.addEventListener("resize", updateTileSize);
     return () => window.removeEventListener("resize", updateTileSize);
-  }, [displayWorld]);
+  }, [world]);
 
   if (loading) {
     return <div className="world-view">Generating world…</div>;
@@ -65,7 +62,7 @@ export const WorldView: React.FC<WorldViewProps> = ({
     );
   }
 
-  if (!displayWorld) {
+  if (!world) {
     return (
       <div className="world-view world-view-placeholder">
         Describe a world to begin.
@@ -81,11 +78,11 @@ export const WorldView: React.FC<WorldViewProps> = ({
       <div
         className="world-grid"
         style={{
-          width: displayWorld.width * tileSize,
-          height: displayWorld.height * tileSize,
+          width: world.width * tileSize,
+          height: world.height * tileSize,
         }}
       >
-        {displayWorld.tiles.map((tile, i) => (
+        {world.tiles.map((tile, i) => (
           <div
             key={i}
             className={`world-tile world-tile--${tile.type}`}
@@ -96,7 +93,7 @@ export const WorldView: React.FC<WorldViewProps> = ({
           />
         ))}
 
-        {displayWorld.objects.map((obj) => (
+        {world.objects.map((obj) => (
   <div
     key={obj.id}
     className={`world-object world-object--${obj.kind}`}
