@@ -3,64 +3,104 @@
   width: 100%;
   height: 100%;
   border-radius: 16px;
-  border: 1px solid #111827;
+  border: 1px solid hsla(278, 9%, 77%, 0.952);
   padding: 0.75rem;
-  background-color: #020817; /* dark navy */
+  background-color: lab(89.74% 2.95 -2.82);
   box-sizing: border-box;
-  overflow: hidden; /* grid handles scrolling if needed */
+  overflow: hidden; 
+}
+
+.world-scroll {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.world-view-zoom-controls {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
   display: flex;
-  align-items: center;
-  justify-content: flex-start; /* or center if you prefer */
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: white;
+  z-index: 9000; 
+}
+
+.world-view-zoom-controls button {
+  border: none;
+  padding: 0.15rem 0.45rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 .world-grid {
+  background: rgba(0, 255, 0, 0.1);
   position: relative;
 }
 
-/* Tiles & objects same as before */
 .world-tile {
   position: absolute;
+  box-sizing: border-box;
+  border: 0.5px solid rgba(81, 117, 60, 0.747); 
 }
 
-/* Simple colors (swap with assets later) */
 .world-tile--ground {
-  background-color: #3b7f3b;
+  background-color: #758A48;
 }
 .world-tile--water {
-  background-color: #2563eb;
+  background-color: #2B7180;
 }
 .world-tile--mountain {
   background-color: #6b7280;
 }
 .world-tile--field {
-  background-color: #a3e635;
+  background-color: #899D5E;
 }
 
-/* Base object styling */
 .world-object {
   position: absolute;
-  transform: translate(-50%, -100%); /* anchor at bottom center of tile */
   pointer-events: none;
-}
+  box-sizing: border-box;
 
-/* Tree object */
-.world-object--tree {
-  width: 1.2em;   /* relative to tile size; tweak */
-  height: 1.6em;
-  background-image: url("/src/assets/icons/tree.png");
+  transform: none;
+}
+.world-object--tree,
+.world-object--rock,
+.world-object--water,
+.world-object--field,
+.world-object--city {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center bottom;
+}
+
+.world-object--tree {
+  background-image: url("/src/assets/icons/tree.png");
+}
+
+.world-object--rock {
+  background-image: url("/src/assets/icons/rock.png");
+}
+
+.world-object--water {
+  background-image: url("../../assets/icons/water.png");
+}
+
+.world-object--field {
+  background-image: url("../../assets/icons/cornfield.png");
+  background-color: transparent;
 }
 
 .world-object--city {
-  width: 32px;              /* tweak to match your tileSize */
-  height: 32px;
   background-image: url("/src/assets/icons/city.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center bottom;
+  background-position: center;
 }
+
 .world-object--city::after {
   content: attr(data-name);
   position: absolute;
@@ -73,38 +113,69 @@
   white-space: nowrap;
   text-shadow: 0 1px 2px rgba(0,0,0,0.7);
 }
-.world-object--rock {
-  width: 40px; /* adjust to match your tile size */
-  height: 40px;
-  background-image: url("/src/assets/icons/rock.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-}
-.world-object--special {
-  background-color: #22d3ee;
-}
-/* 🌊 Water object */
-.world-object--water {
-  width: 32px;               /* or adjust to match other objects */
-  height: 32px;
-  background-image: url("../../assets/icons/water.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  position: absolute;
-  transform: translate(-50%, -100%); /* bottom-center anchor */
-  pointer-events: none;
+
+.world-view-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;      
+  text-align: center;
 }
 
-.world-object--field {
-  width: 32px;
-  height: 32px;
-  background-image: url("../../assets/icons/cornfield.png");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-color: transparent; 
-  background-position: center;
-  position: absolute;
-  transform: translate(-50%, -100%);
+.world-view-placeholder span {
+    margin: 0;
+  padding: 0;
+}
+
+.world-view-placeholder .typing-text {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: left;
+  border-right: 2px solid rgba(255, 255, 255, 0.75);
+  font-family: 'Papyrus';
+  font-size: 1.8rem;      
+  animation:
+    typingLoop 6s steps(28, end) infinite,
+    fadeLoop 6s ease-in-out infinite,
+    blink 0.7s step-end infinite;
+}
+
+@keyframes typingLoop {
+  0%   { width: 0; }
+  50%  { width: 28ch; }  
+  80%  { width: 28ch; }  
+  100% { width: 0; }     
+}
+
+@keyframes fadeLoop {
+  0%   { opacity: 1; }
+  50%  { opacity: 1; }   
+  80%  { opacity: 0; }   
+  100% { opacity: 0; }   
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+.world-view.generating-text {
+  display: flex;                 
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  font-family: "Papyrus", "Lucida Handwriting", cursive;
+  font-size: 1.6rem;
+
+  animation: pulseFade 2.5s ease-in-out infinite;
+  opacity: 0;                    
+}
+
+@keyframes pulseFade {
+  0%   { opacity: 0; }
+  40%  { opacity: 1; }   
+  60%  { opacity: 1; }   
+  100% { opacity: 0; }   
 }

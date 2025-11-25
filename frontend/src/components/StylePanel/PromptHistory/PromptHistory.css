@@ -1,53 +1,17 @@
-.style-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: 100%;
-  min-height: 0; 
-}
-
-.style-panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.style-panel-title {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.style-panel-history-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.style-history-btn {
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid #ccc;
-  background: #f7f7f7;
-  cursor: pointer;
-  font-size: 0.85rem;
-  color:#000000;
-}
-.style-history-btn:hover {
-  background: #f5f5f5;
-}
-
-.style-history-btn:active {
-  transform: scale(0.97);
-}
-
 .prompt-history {
   margin-top: 8px;
   border-top: 1px solid #eee;
   padding-top: 8px;
-
   flex: 1 1 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.prompt-history--empty {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #888;
 }
 
 .prompt-history-title {
@@ -63,11 +27,12 @@
 
   flex: 1 1 0;
   min-height: 0;
-  overflow-y: auto;
 
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  overflow-y: auto;    
 }
 
 .prompt-history-item {
@@ -107,4 +72,3 @@
   cursor: pointer;
   text-decoration: underline;
 }
-

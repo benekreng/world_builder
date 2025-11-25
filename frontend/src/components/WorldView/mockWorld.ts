@@ -26,8 +26,8 @@ export interface World {
 // ---- MOCK DATA ----
 // Edit this however you like to test visuals.
 
-const WIDTH = 24;
-const HEIGHT = 14;
+const WIDTH = 128;
+const HEIGHT = 64;
 
 const tiles: Tile[] = [];
 
