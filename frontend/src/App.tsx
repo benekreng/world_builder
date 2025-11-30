@@ -2,7 +2,7 @@ import { useState } from "react";
 import { WorldView } from "./components/WorldView/WorldView";
 import { StylePanel } from "./components/StylePanel/StylePanel";
 import { PromptBar } from "./components/PromptBar/PromptBar";
-import { mockWorld, type World } from "./components/WorldView/mockWorld";
+import { mockWorld, type World } from "./world";
 import "./App.css";
 
 export type WorldStyle = "mars" | "earth" | "fantasy" | "scifi";

@@ -1,7 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
-import { type World } from "./mockWorld";
+import { type World } from "../../world";
 import type { WorldStyle } from "../../App";
 import "./WorldView.css";
+import assetsMap from "../../assets/assetsMap.json";
+
+const earthFiles = import.meta.glob("../../assets/themes/earth/*.png", {
+  eager: true,
+  as: "url",
+});
+
+const themeFiles: Record<WorldStyle, Record<string, string>> = {
+  earth: earthFiles,
+  mars: earthFiles,
+  fantasy: earthFiles,
+  scifi: earthFiles
+};
+
+function getAssetPathByWorldStyle(worldStyle: WorldStyle, propName: string, part: number): string | undefined {
+  const fileName = (assetsMap as Record<string, string[]>)[propName][part];
+  if (!fileName) return undefined;
+
+  const files = themeFiles[worldStyle];
+  const entry = Object.entries(files).find(([path]) => path.endsWith("/" + fileName));
+  return entry?.[1]; // this is already the built URL string
+}
 
 interface WorldViewProps {
   styleVariant: WorldStyle;
@@ -99,19 +121,33 @@ export const WorldView: React.FC<WorldViewProps> = ({
 
         {/* Objects */}
         {world.objects.map((obj) => (
-          <div
-            key={obj.id}
-            className={`world-object world-object--${obj.kind}`}
-            style={{
-              left: obj.x * tileSize,
-              top: obj.y * tileSize,
-              width: tileSize,
-              height: tileSize,
-            }}
-            title={obj.name || obj.kind}
-            data-name={obj.kind === "city" ? obj.name : undefined}
-          />
-        ))}
+  <div
+    key={obj.id}
+    className={`world-object world-object--${obj.kind}`}
+    style={{
+      backgroundImage: `url(${getAssetPathByWorldStyle(styleVariant, obj.kind, obj.part)})`,
+      left: obj.x * tileSize,
+      top: obj.y * tileSize,
+      width: tileSize,
+      height: tileSize,
+    }}
+    title={obj.name || obj.kind}
+
+    // City label only on the center tile (part = 1)
+    data-name={
+      obj.kind === "city" && obj.part === 3 
+        ? obj.name
+        : undefined
+    }
+
+    // Give data-part to ANY object that has a part (city, tree, etc.)
+    data-part={
+      obj.part !== undefined
+        ? String(obj.part)
+        : undefined
+    }
+  />
+))}
       </div>
     </div>
 

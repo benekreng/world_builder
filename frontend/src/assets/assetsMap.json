@@ -1,28 +1,24 @@
 {
-    "city_m": [
-        "city_m_0.png",
-        "city_m_1.png",
-        "city_m_2.png",
-        "city_m_3.png"
+    "city": [
+        "city_0.png",
+        "city_1.png",
+        "city_2.png",
+        "city_3.png",
+        "city_4.png",
+        "city_5.png",
+        "city_6.png",
+        "city_7.png"
     ],
-    "bridge_wood": [
-        "bridge_0.png",
-        "bridge_1.png",
-        "bridge_2.png"
-    ],
-    "castle_keep": [
-        "keep_0.png",
-        "keep_1.png",
-        "keep_2.png",
-        "keep_3.png"
+    "tree_oak": [
+        "tree_oak_0.png"
     ],
     "tree_pine": [
         "tree_pine_0.png"
     ],
-    "rock_L": [
-        "rock_l_0.png"
+    "water": [
+        "water_0.png"
     ],
-    "dirt_path_h": [
-        "dirt_path_h_0.png"
+    "rock": [
+        "rock_0.png"
     ]
 }

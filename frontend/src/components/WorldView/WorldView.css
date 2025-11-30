@@ -63,42 +63,14 @@
 }
 
 .world-object {
-  position: absolute;
-  pointer-events: none;
-  box-sizing: border-box;
-
-  transform: none;
-}
-.world-object--tree,
-.world-object--rock,
-.world-object--water,
-.world-object--field,
-.world-object--city {
+  background-size: 100% 100%;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center bottom;
-}
-
-.world-object--tree {
-  background-image: url("/src/assets/icons/tree.png");
-}
-
-.world-object--rock {
-  background-image: url("/src/assets/icons/rock.png");
-}
-
-.world-object--water {
-  background-image: url("../../assets/icons/water.png");
-}
-
-.world-object--field {
-  background-image: url("../../assets/icons/cornfield.png");
-  background-color: transparent;
-}
-
-.world-object--city {
-  background-image: url("/src/assets/icons/city.png");
-  background-position: center;
+  position: absolute;
+  pointer-events: none;
+  box-sizing: border-box;
+  transform: none;
 }
 
 .world-object--city::after {
@@ -107,11 +79,16 @@
   left: 50%;
   top: 100%;
   transform: translateX(-50%);
-  margin-top: 2px;
-  font-size: 0.55rem;
-  color: #e5e7eb;
+  margin-top: 4px;
+
+  font-size: 0.9rem;           /* ⬅️ Increased from 0.55rem */
+  font-weight: 600;            /* ⬅️ Looks sharper */
+  color: #ffffff;
+
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+  text-shadow:
+    0 0 3px rgba(0, 0, 0, 0.9),   /* strong outline */
+    0 0 6px rgba(0, 0, 0, 0.7);   /* soft glow */
 }
 
 .world-view-placeholder {
