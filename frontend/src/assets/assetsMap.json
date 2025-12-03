@@ -10,15 +10,50 @@
         "city_7.png"
     ],
     "tree_oak": [
-        "tree_oak_0.png"
+        "tree_oak_0.png",
+        "tree_oak_1.png"
     ],
     "tree_pine": [
-        "tree_pine_0.png"
+        "tree_pine_0.png",
+        "tree_pine_1.png"
+    ],
+    "tree_palm": [
+        "tree_palm_0.png",
+        "tree_palm_1.png",
+        "tree_palm_2.png"
+    ],
+    "tree_birch": [
+        "tree_birch_0.png",
+        "tree_birch_1.png"
+    ],
+    "tree_maple": [
+        "tree_maple_0.png",
+        "tree_maple_1.png"
+    ],
+    "tree_sakura": [
+        "tree_sakura_0.png"
     ],
     "water": [
         "water_0.png"
     ],
+    "ground": [
+        "ground_0.png"
+    ],
+    "sand": [
+        "sand_0.png"
+    ],
+    "path": [
+        "path_0.png"
+    ],
+    "snow": [
+        "snow_0.png"
+    ],
     "rock": [
-        "rock_0.png"
+        "rock_0.png",
+        "rock_1.png"
+    ],
+    "bridge": [
+        "bridge_0.png",
+        "bridge_1.png"
     ]
 }

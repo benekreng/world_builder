@@ -44,6 +44,7 @@
 }
 
 .world-tile {
+  background-size: 100% 100%;
   position: absolute;
   box-sizing: border-box;
   border: 0.5px solid rgba(81, 117, 60, 0.747); 
@@ -60,6 +61,15 @@
 }
 .world-tile--field {
   background-color: #899D5E;
+}
+.world-tile--path {
+  background-color: #6C3620;
+}
+.world-tile--sand {
+  background-color: #d4bc7a;
+}
+.world-tile--snow {
+  background-color: #e8fafc;
 }
 
 .world-object {

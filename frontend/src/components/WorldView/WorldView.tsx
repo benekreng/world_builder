@@ -17,7 +17,7 @@ const themeFiles: Record<WorldStyle, Record<string, string>> = {
 };
 
 function getAssetPathByWorldStyle(worldStyle: WorldStyle, propName: string, part: number): string | undefined {
-  const fileName = (assetsMap as Record<string, string[]>)[propName][part];
+  const fileName = (assetsMap as Record<string, string[]>)[propName]?.[part];
   if (!fileName) return undefined;
 
   const files = themeFiles[worldStyle];
@@ -111,6 +111,7 @@ export const WorldView: React.FC<WorldViewProps> = ({
             key={i}
             className={`world-tile world-tile--${tile.type}`}
             style={{
+              backgroundImage: `url(${getAssetPathByWorldStyle(styleVariant, tile.type, 0)})`,
               left: tile.x * tileSize,
               top: tile.y * tileSize,
               width: tileSize,
