@@ -3,6 +3,7 @@ import "./PromptBar.css";
 
 interface PromptBarProps {
   onSubmit: (prompt: string) => void;
+  busy?: boolean;
 }
 
 export const PromptBar: React.FC<PromptBarProps> = ({ onSubmit }) => {

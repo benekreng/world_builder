@@ -1,0 +1,123 @@
+.style-dropdown {
+  position: relative;
+}
+
+/* Button that shows the current style */
+.style-dropdown-button {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  background: #111;
+  cursor: pointer;
+}
+
+/* Preview area with background image */
+.style-dropdown-preview {
+  flex: 1;
+  position: relative;
+  padding: 12px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay with text on top of image */
+.style-dropdown-overlay {
+  backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.style-dropdown-label {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.style-dropdown-description {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.style-dropdown-caret {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #000000;
+  background: #fff;
+}
+
+.style-dropdown-menu {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 6px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  background: #111;
+}
+
+.style-dropdown-option {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.style-dropdown-option--active .style-option-overlay {
+  outline: 2px solid #4ade80;
+}
+
+.style-option-bg {
+  position: relative;
+  padding: 10px 12px;
+  background-size: cover;
+  background-position: center;
+}
+
+.style-option-overlay {
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.style-option-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.style-option-description {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.style-dropdown-preview--earth,
+.style-option-bg--earth {
+  background-image: url("../../../assets/style-earth.jpg");
+}
+
+.style-dropdown-preview--mars,
+.style-option-bg--mars {
+  background-image: url("../../../assets/style-mars.jpg");
+}
+
+.style-dropdown-preview--fantasy,
+.style-option-bg--fantasy {
+  background-image: url("../../../assets/style-fantasy.jpg");
+}
+
+.style-dropdown-preview--scifi,
+.style-option-bg--scifi {
+  background-image: url("../../../assets/style-scifi.jpg");
+}
