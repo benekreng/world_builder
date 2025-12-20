@@ -29,5 +29,11 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    await core.test_async()
+    await core.create_world()
+    return {"message": "Hello World"}
+
+
+@app.get("/add")
+async def root():
+    await core.create_world()
     return {"message": "Hello World"}
