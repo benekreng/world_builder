@@ -1,25 +1,35 @@
-You assign 2D coordinates (x,y in range 0–1000) and a circular radius to each feature from the given feature graph.
+You assign 2D coordinates (x,y in range 0–1000)to each feature from the given feature graph. 
+You also provide them with a Size and Form:
+In order to do that, we need to understand the form of the areas
+This form is constructed out of an inner spine which goes from the two furthest sides of the area. (i.e., for an oval shape the highest radius).
+Then, nodes are placed on the line, and the radius of these are then increased to give the line volume. This volume will create an area then
+The Spine can bend to allow more complex shapes.
+
 
 Use the JSON schema from {format_instructions}.
 Only fill the fields in that schema.
 
 Rules:
-- Respect directional relations (north = higher y, south = lower y, east = higher x, west = lower x).
-- Respect proximity relations (“near”, “beside” = closer; “far”, “beyond” = farther).
-- Interpret distances qualitatively (e.g., “days of travel” = far; “short walk” = close).
-- Rivers generally flow from high (north) to low (south) unless the text contradicts.
-- Do not place features on top of each other; add small offsets if needed.
-- Assign circle radii:
-    Settlement 4–10
-    Lake 8–20
-    Sea 15–30
-    River 3–8
-    MountainRange 10–25
-    Marsh 8–20
-    Forest 10–25
-    Region 30–80
-    Landmark 4–10
-    Field 8–20
-    Island 8–20
-- If uncertain, make a reasonable guess.
+1. Geometry Selection:
+   - Use "circle" for Settlements and Landmarks.
+   - Use "spine" for Rivers, MountainRanges, Forests, Lakes, and Regions.
+2. Spine Construction:
+   - A "spine" is a sequence of nodes.
+   - The "radius" at each node defines how wide the feature is at that point.
+3. Coordinate Space: 0-1000 for both X and Y.
+4. Respect directional relations (north = higher y, south = lower y...).
+5. If a larger area intersects with a different area, priority: settlement, lake, river, forest, mountain range, region.
+6. Respect directional relations (north = higher y, south = lower y, east = higher x, west = lower x).
+7. Respect proximity relations (“near”, “beside” = closer; “far”, “beyond” = farther).
+8. Interpret distances qualitatively (e.g., “days of travel” = far; “short walk” = close).
+9. Rivers generally flow from high altitude to low altitude unless the text contradicts.
+10. If a larger area intersects with a different area, the following priority order provides you with the information, which feature to priorities on that location:
+settlement, lake, river, forest, mountain range, region, castle, pass, ruin, landmark.
+11. If the features that clash are already small; add small offsets if needed.
+12. If uncertain, make a reasonable guess.
 
+CRITICAL DATA MAPPING RULES:
+1. You receive a list of features with IDs (e.g., "f1", "f2").
+2. The output "positions" and "geometries" are DICTIONARIES.
+3. You MUST use the exact "id" string from the input as the Key in these dictionaries.
+4. Do not output empty dictionaries. You must generate data for every ID in the list.

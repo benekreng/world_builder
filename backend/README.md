@@ -57,3 +57,11 @@ Install packages via requirements.txt
 
 Set api key:
 > export OPEN_ROUTER_API_KEY="key goes here"
+
+
+Running it:
+cd backend
+source .venv/bin/activate
+python -m world_builder.main (LLM)
+python world_builder/process_map.py (for rasterization)
+python ./viewer.py (displying the json)

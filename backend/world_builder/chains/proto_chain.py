@@ -46,6 +46,24 @@ class CoordinateUpdateStep:
         return self.parser.parse(response.content)
 
 
+
+def promote_extracted_to_final(extracted: ExtractFeatureGraph) -> FinalFeatureGraph:
+    final_features = []
+    for feature in extracted.features:
+        final_features.append(
+            FinalFeature(
+                id=feature.id,
+                name=feature.name,
+                category=feature.category,
+                attributes=feature.attributes,
+                relations=feature.relations,
+                position=None, # To be filled by update step
+                geometry=None  # To be filled by update step
+            )
+        )
+    return FinalFeatureGraph(features=final_features)
+
+
 # Merge ExtractFeatureGraph with coordinates from coordinateupdatestep into finalfeaturegraph 
 def apply_coordinate_updates(graph: FinalFeatureGraph, updates: CoordinateUpdateModel) -> FinalFeatureGraph:
     # Index by ID for easy access
@@ -63,26 +81,6 @@ def apply_coordinate_updates(graph: FinalFeatureGraph, updates: CoordinateUpdate
 
     return graph
 
-
-def promote_extracted_to_final(extracted: ExtractFeatureGraph) -> FinalFeatureGraph:
-    final_features = []
-
-    for feature in extracted.features:
-        final_features.append(
-            FinalFeature(
-                id=feature.id,
-                name=feature.name,
-                category=feature.category,
-                attributes=feature.attributes,
-                relations=feature.relations,
-                position=None,
-                geometry=None
-            )
-        )
-
-    return FinalFeatureGraph(features=final_features)
-
-
 class MapPipeline:
     def __init__(self, llm):
         self.llm = llm
@@ -92,9 +90,13 @@ class MapPipeline:
     async def run(self, world_state_text):
         print("Extracting Geo Features...")
         geo = await self.extract_geo_relations.run(world_state_text)
+        print(json.dumps(geo.model_dump(), indent=4))
         print("Update coordinates...")
         coord_updates = await self.coordinate_update_step.run(geo.model_dump_json(), world_state_text)
         # TODO: update world_state_text at the same time as coordinate_update_setp
+        print(f"Received {len(coord_updates.positions)} positions from LLM.")
+        print(f"Received {len(coord_updates.geometries)} geometries from LLM.")
+
 
         final_feature_graph = promote_extracted_to_final(geo)
         final_graph = apply_coordinate_updates(final_feature_graph, coord_updates)
