@@ -6,11 +6,6 @@ from .models import FinalFeatureGraph
 from .road_generator import RoadGenerator
 
 class MapRasterizer:
-    # ... (__init__ and helpers remain EXACTLY the same as previous) ...
-    # (Copy the __init__, _scale_point, _generate_interpolated_points, 
-    #  _get_feature_mask, _create_square_mask_from_plus, _find_new_position_mask logic)
-    
-    # ... PASTE PREVIOUS HELPER METHODS HERE ...
     def __init__(self, grid_width=64, grid_height=64, world_extent=1000):
         self.width = grid_width
         self.height = grid_height
@@ -32,8 +27,8 @@ class MapRasterizer:
         }
         
         self.CATEGORY_IDS = {k: i for i, k in enumerate(self.PRIORITY.keys(), 1)}
+        self.TREE_TYPES = ["tree_oak", "tree_pine", "tree_palm", "tree_birch", "tree_maple", "tree_sakura"]
 
-    # ... (Keep _scale_point, _generate_interpolated_points, _get_feature_mask, _create_square_mask_from_plus, _find_new_position_mask) ...
     def _scale_point(self, x, y, r):
         sx = x * self.scale_x
         sy = y * self.scale_y
@@ -99,6 +94,28 @@ class MapRasterizer:
                             return self._get_feature_mask(feature, override_pos=(nx, ny))
         return self._get_feature_mask(feature)
 
+    def _get_cell_prop(self, category, is_road=False, is_bridge=False):
+        """Maps Categories to the specific asset names provided."""
+        name = None
+        
+        if is_bridge: return {"name": "bridge", "part": 0}
+        if is_road: return {"name": "path", "part": 0}
+
+        if category == "Settlement": name = "city"
+        elif category == "Landmark": name = "city"
+        elif category == "River": name = "water"
+        elif category == "Lake": name = "water"
+        elif category == "Sea": name = "water"
+        elif category == "Marsh": name = "water"
+        elif category == "MountainRange": name = "rock"
+        elif category == "Forest": name = random.choice(self.TREE_TYPES)
+        elif category == "Region": name = "ground"
+        elif category == "Field": name = "ground"
+        
+        if name:
+            return {"name": name, "part": 0}
+        return None
+    
     def rasterize_to_json(self, graph: FinalFeatureGraph):
         # 1. SETUP IMAGES
         img_landscape = Image.new("I", (self.width, self.height), 0)
@@ -107,15 +124,12 @@ class MapRasterizer:
         sorted_features = sorted(graph.features, key=lambda f: self.PRIORITY.get(f.category, 0))
         feature_lookup = {i: f for i, f in enumerate(sorted_features, 1)}
         
-        # ---------------------------------------------------------------------
-        # PHASE 1: DRAW BASE LANDSCAPE (Rivers, Terrain) - No Cities
-        # ---------------------------------------------------------------------
+        #Phase 1: Draw Base Landscape (Rivers, Terrain) - No Cities
         for i, feature in enumerate(sorted_features, 1):
             if feature.category == "Settlement": continue
             if not feature.geometry: continue
 
             if feature.category == "River":
-                # STRICT RIVER DRAWING (Lines)
                 if feature.geometry.kind == "spine":
                     points = self._generate_interpolated_points(feature.geometry.nodes)
                     xy_points = [(p[0], p[1]) for p in points]
@@ -135,12 +149,10 @@ class MapRasterizer:
         river_id_val = self.CATEGORY_IDS["River"]
         water_ids = [river_id_val, self.CATEGORY_IDS["Sea"], self.CATEGORY_IDS["Lake"]]
 
-        # Track City Centers for Roads
+        #Track City Centers for Roads
         city_centers = []
 
-        # ---------------------------------------------------------------------
-        # PHASE 2: PLACE SETTLEMENTS
-        # ---------------------------------------------------------------------
+        #Phase 2: Place Settlements
         for i, feature in enumerate(sorted_features, 1):
             if feature.category != "Settlement": continue
             if not feature.geometry: continue
@@ -159,10 +171,10 @@ class MapRasterizer:
             
             if intersects_river:
                 if pixel_count > 12: 
-                    # LARGE CITY: Stay put
+                    #Large City: Stay there
                     pass 
                 else:
-                    # SMALL CITY: Move
+                    #Small City: Move
                     final_mask = self._find_new_position_mask(feature, grid_final, water_ids)
             
             # Place City on Grid
@@ -175,90 +187,88 @@ class MapRasterizer:
                 cy = int(np.mean(y_idxs))
                 city_centers.append((cx, cy))
 
-        # ---------------------------------------------------------------------
-        # PHASE 3: GENERATE ROADS
-        # ---------------------------------------------------------------------
+        #Phase 3: Road Generation
         road_gen = RoadGenerator(self.width, self.height, grid_final, self.CATEGORY_IDS)
         road_pixels = road_gen.generate_network(city_centers)
         
         # Assign a NEW unique ID for the road network (higher than any existing feature)
-        # This prevents it from clashing with Feature #5 if Road Category is 5.
         road_feature_id = max(feature_lookup.keys()) + 1
         
+        # Helper to track if a road is a bridge
+        road_is_bridge = {}
+
         for (rx, ry) in road_pixels:
             current_id = grid_final[ry, rx]
-            
-            # 1. LOOK UP THE EXISTING FEATURE
-            # The grid contains Unique Feature IDs (1, 2, 3...), not Category IDs
+            #Look up the existing feature
             existing_feature = feature_lookup.get(current_id)
-            
-            # 2. PROTECT CITIES
-            # If the pixel belongs to a Settlement, SKIP.
+            #Protect Cities
             if existing_feature and existing_feature.category == "Settlement":
                 continue
-                
-            # 3. Write the Road ID
+            #add bridge
+            if existing_feature and existing_feature.category in ["River", "Sea", "Lake"]:
+                road_is_bridge[(rx, ry)] = True
+            #Write the Road ID
             grid_final[ry, rx] = road_feature_id
 
-        # ---------------------------------------------------------------------
-        # PHASE 4: EXPORT
-        # ---------------------------------------------------------------------
-        entities = []
+        #Phase 4: Export
         
-        # 4a. Export Standard Features
+
+        entities = []
+        # 4a: Export Standard Features
         for int_id, feature in feature_lookup.items():
-            # Find pixels belonging to this feature
             y_idxs, x_idxs = np.where(grid_final == int_id)
-            
-            # If feature was fully overwritten (e.g. by road or larger feature), skip
             if len(x_idxs) == 0: continue
+
+            #Merge LLM Attributes with basic Metadata
+            meta = feature.attributes.copy()
+            meta["name"] = feature.name
+            meta["color"] = self.COLORS.get(feature.category, "#000000")
+            #Making sure there is meta data
+            if "description" not in meta:
+                meta["description"] = f"A {feature.category} named {feature.name}."
 
             cells = []
             for y, x in zip(y_idxs, x_idxs):
-                cells.append({"x": int(x), "y": int(y), "props": []})
-
-            # Calculate Center for Icons based on VISIBLE cells
-            if cells:
-                avg_x = sum(c['x'] for c in cells) // len(cells)
-                avg_y = sum(c['y'] for c in cells) // len(cells)
-            else:
-                avg_x, avg_y = 0, 0
-
-            icons = []
-            if feature.category == "Settlement":
-                icons.append({"type": "city", "origin": {"x": avg_x, "y": avg_y}})
-            elif feature.category == "Landmark":
-                icons.append({"type": "poi", "origin": {"x": avg_x, "y": avg_y}})
+                # NEW: Generate Prop Object
+                prop_data = self._get_cell_prop(feature.category)
+                
+                cells.append({
+                    "x": int(x), 
+                    "y": int(y), 
+                    "prop": prop_data
+                })
 
             entities.append({
                 "id": feature.id,
-                "metadata": {
-                    "name": feature.name,
-                    "color": self.COLORS.get(feature.category, "#000000")
-                },
+                "metadata": meta,
                 "category": feature.category,
-                "cells": cells,
-                "icons": icons
+                "cells": cells
             })
             
-        # 4b. Export Generated Roads
-        # We look for the unique road_feature_id we created
+        # 4b: Export Generated Roads
         road_y, road_x = np.where(grid_final == road_feature_id)
         
         if len(road_x) > 0:
             road_cells = []
             for y, x in zip(road_y, road_x):
-                road_cells.append({"x": int(x), "y": int(y), "props": []})
+                is_bridge = road_is_bridge.get((x, y), False)
+                prop_data = self._get_cell_prop("Road", is_road=True, is_bridge=is_bridge)
+
+                road_cells.append({
+                    "x": int(x), 
+                    "y": int(y), 
+                    "prop": prop_data
+                })
                 
             entities.append({
                 "id": "generated_roads",
                 "metadata": {
                     "name": "Trade Routes",
+                    "description": "Roads connecting the settlements.",
                     "color": self.COLORS["Road"]
                 },
                 "category": "Road",
-                "cells": road_cells,
-                "icons": []
+                "cells": road_cells
             })
 
         return {"entities": entities}

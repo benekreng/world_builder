@@ -2,19 +2,15 @@ import json
 import sys
 from pathlib import Path
 
-# --- 1. SYSTEM PATH SETUP ---
-# Get the absolute path of the current file
+#Get the absolute path of the current file
 current_file = Path(__file__).resolve()
-
-# Get the 'backend' directory (parent of 'world_builder')
+#Get the 'backend' directory (parent of 'world_builder')
 backend_dir = current_file.parent.parent
-
-# Add 'backend' to python path so we can import 'world_builder' modules
+#Add 'backend' to python path so we can import 'world_builder' modules
 if str(backend_dir) not in sys.path:
     sys.path.append(str(backend_dir))
 
-# --- 2. ABSOLUTE IMPORTS ---
-# Now we import starting from the package name, NO dots (.)
+# Now we import starting from the package name
 from world_builder.models import FinalFeatureGraph
 from world_builder.rasterizer import MapRasterizer
 
@@ -27,7 +23,7 @@ def run_processing():
     possible_paths = [
         backend_dir / "graph_dump.json",
         script_dir / "graph_dump.json",
-        Path("graph_dump.json") # Current working dir
+        Path("graph_dump.json") # (Current working dir)
     ]
     
     input_path = None
@@ -46,19 +42,14 @@ def run_processing():
     with open(input_path, 'r') as f:
         raw_data = json.load(f)
 
-    # Rehydrate the Graph
     graph = FinalFeatureGraph(**raw_data)
 
-    # ---------------------------------------------------------
-    # TWEAK SETTINGS HERE
-    # ---------------------------------------------------------
+    #Grid Size settings
     GRID_W = 64
     GRID_H = 64
-    # ---------------------------------------------------------
 
     print(f"Rasterizing to {GRID_W}x{GRID_H} grid...")
     
-    # Run Rasterizer
     rasterizer = MapRasterizer(grid_width=GRID_W, grid_height=GRID_H, world_extent=1000)
     world_data = rasterizer.rasterize_to_json(graph)
 

@@ -9,22 +9,22 @@ class RoadGenerator:
         self.grid = grid
         self.cat_ids = category_ids
 
-        # Reverse lookup to find Category Name from ID
+        #Reverse lookup to find Category Name from ID
         self.id_to_cat = {v: k for k, v in category_ids.items()}
 
-        # DEFINE TERRAIN COSTS
-        # Low cost = prefer path. High cost = avoid.
+        #Terrain costs
+        #Low cost = prefer path, High cost = avoid.
         self.COSTS = {
             "Region": 1, 
             "Field": 1,
-            "Marsh": 4,      # Marshes are wet/slow
-            "Forest": 3,     # Trees are hard to cut through
-            "Road": 0.1,     # Existing roads are super fast (encourages merging)
-            "Lake": 50,      # Go around
-            "River": 20,     # Bridges are expensive
+            "Marsh": 4,      
+            "Forest": 3,
+            "Road": 0.1,
+            "Lake": 50,
+            "River": 20,
             "MountainRange": 30, 
             "Sea": 9999,
-            "Settlement": 0.5 # Roads naturally go INTO cities
+            "Settlement": 0.5
         }
 
     def _get_terrain_multiplier(self, x, y):
@@ -37,7 +37,6 @@ class RoadGenerator:
         return self.COSTS.get(cat_name, 1)
 
     def _heuristic(self, a, b):
-        # Euclidean Distance is better for 8-way movement (more direct)
         return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
 
     def find_path(self, start, end):
@@ -49,11 +48,11 @@ class RoadGenerator:
         came_from = {}
         cost_so_far = {start: 0}
         
-        # Directions: (dx, dy, distance_cost)
-        # Straight moves cost 1.0, Diagonals cost 1.414
+        #Directions: (dx, dy, distance_cost)
+        #Straight moves cost 1.0, Diagonals cost 1.414
         moves = [
-            (0, 1, 1.0), (0, -1, 1.0), (1, 0, 1.0), (-1, 0, 1.0),       # Cardinals
-            (1, 1, 1.414), (1, -1, 1.414), (-1, 1, 1.414), (-1, -1, 1.414) # Diagonals
+            (0, 1, 1.0), (0, -1, 1.0), (1, 0, 1.0), (-1, 0, 1.0),
+            (1, 1, 1.414), (1, -1, 1.414), (-1, 1, 1.414), (-1, -1, 1.414)
         ]
 
         while pq:
@@ -129,8 +128,4 @@ class RoadGenerator:
             path = self.find_path(start, end)
             for p in path:
                 road_pixels.add(p)
-                
-                # Optional: Make heavily trafficked roads "cheaper" for future iterations
-                # In a complex setup, we'd update self.grid or a separate cost_grid here
-                
         return list(road_pixels)
