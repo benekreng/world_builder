@@ -1,61 +1,87 @@
 import json
+import math
 from PIL import Image, ImageDraw
 
 def hex_to_rgb(hex_color):
-    """Converts '#RRGGBB' to (R, G, B) tuple."""
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
 def render_json_to_image(json_path):
     print(f"Loading {json_path}...")
-    
     try:
         with open(json_path, 'r') as f:
             data = json.load(f)
     except FileNotFoundError:
-        print("Error: world_data.json not found. Run the world builder first.")
+        print("Error: world_data.json not found.")
         return
 
-    # Create a blank canvas
-    width, height = 1000, 1000
-    img = Image.new("RGB", (width, height), "#f4f1ea") # Parchment background
-    pixels = img.load()
+    # 1. AUTO-DETECT GRID SIZE
+    max_x = 0
+    max_y = 0
+    for ent in data['entities']:
+        for cell in ent['cells']:
+            if cell['x'] > max_x: max_x = cell['x']
+            if cell['y'] > max_y: max_y = cell['y']
+    
+    # Grid dimensions (add 1 because coords are 0-indexed)
+    grid_w = max_x + 1
+    grid_h = max_y + 1
+    
+    print(f"Detected Grid Resolution: {grid_w}x{grid_h}")
+
+    # 2. SCALE UP FOR VIEWING
+    # We want the output image to be roughly 1000px so we can see it
+    target_size = 1000
+    scale = max(1, target_size // max(grid_w, grid_h))
+    
+    img_w = grid_w * scale
+    img_h = grid_h * scale
+    
+    print(f"Upscaling by {scale}x for viewing (Output: {img_w}x{img_h})")
+    
+    img = Image.new("RGB", (img_w, img_h), "#f4f1ea") # Parchment
     draw = ImageDraw.Draw(img)
 
-    print(f"Found {len(data['entities'])} entities. Rendering pixels...")
-
-    # 1. Render Cells (The Terrain/Shapes)
+    # 3. RENDER TERRAIN (Cells)
     for entity in data['entities']:
-        # Get color from metadata, default to black if missing
+        # Get color
         hex_color = entity['metadata'].get('color', '#000000')
-        rgb_color = hex_to_rgb(hex_color)
+        fill_color = hex_to_rgb(hex_color)
         
-        # Draw every single cell defined in the JSON
         for cell in entity['cells']:
-            x, y = cell['x'], cell['y']
-            # Bounds check just in case
-            if 0 <= x < width and 0 <= y < height:
-                pixels[x, y] = rgb_color
+            gx, gy = cell['x'], cell['y']
+            
+            # Calculate pixel rect for this tile
+            px = gx * scale
+            py = gy * scale
+            
+            # Draw rectangle (Pixel Art style)
+            draw.rectangle([px, py, px + scale - 1, py + scale - 1], fill=fill_color)
 
-    # 2. Render Icons (The Metadata Overlay)
-    print("Rendering icons...")
+    # 4. RENDER ICONS (Centered in the tile)
     for entity in data['entities']:
         for icon in entity.get('icons', []):
             origin = icon['origin']
-            ox, oy = origin['x'], origin['y']
+            gx, gy = origin['x'], origin['y']
             
-            # Draw a simple marker for the icon
+            # Center of the scaled tile
+            cx = (gx * scale) + (scale // 2)
+            cy = (gy * scale) + (scale // 2)
+            
+            # Draw a simple marker relative to tile size
+            icon_size = max(3, scale // 2) # Half the tile size
+            
             if icon['type'] == 'city':
-                # Draw a black square with white border for cities
-                draw.rectangle([ox-4, oy-4, ox+4, oy+4], fill="black", outline="white")
+                draw.rectangle([cx - icon_size//2, cy - icon_size//2, 
+                                cx + icon_size//2, cy + icon_size//2], 
+                                fill="black", outline="white")
             elif icon['type'] == 'poi':
-                # Draw a small red triangle/circle for landmarks
-                draw.ellipse([ox-3, oy-3, ox+3, oy+3], fill="red", outline="white")
+                draw.ellipse([cx - icon_size//3, cy - icon_size//3, 
+                              cx + icon_size//3, cy + icon_size//3], 
+                              fill="red", outline="white")
 
-    # Save output
-    output_filename = "json_debug_view.png"
-    img.save(output_filename)
-    print(f"Success! Debug view saved to {output_filename}")
+    img.save("json_debug_view.png")
+    print("Saved 'json_debug_view.png'")
 
 if __name__ == "__main__":
     render_json_to_image("world_data.json")
