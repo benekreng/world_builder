@@ -1,0 +1,503 @@
+{
+    "features": [
+        {
+            "id": "f1",
+            "name": "The Vale of Thareth",
+            "category": "Region",
+            "attributes": {
+                "description": "Temperate, fertile basin known for rolling green hills, broken ruins, and soft morning mists.",
+                "length": "roughly sixty miles east to west",
+                "surroundings": "Hemmed by two mountain spines."
+            },
+            "relations": [
+                {
+                    "type": "between",
+                    "target": "f2",
+                    "value": null
+                },
+                {
+                    "type": "between",
+                    "target": "f3",
+                    "value": null
+                },
+                {
+                    "type": "contains",
+                    "target": "f4",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 450.0,
+                "y": 600.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 80.0
+            }
+        },
+        {
+            "id": "f2",
+            "name": "Glimmerstone Peaks",
+            "category": "MountainRange",
+            "attributes": {
+                "description": "Barrier of snow-capped ridges and hidden passes.",
+                "composition": "Mica and quartz exposed by wind and frost."
+            },
+            "relations": [
+                {
+                    "type": "north_of",
+                    "target": "f1",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 500.0,
+                "y": 900.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 25.0
+            }
+        },
+        {
+            "id": "f3",
+            "name": "Serran Floodplain",
+            "category": "Region",
+            "attributes": {
+                "description": "Region of broad meadows and slow-moving tributaries."
+            },
+            "relations": [
+                {
+                    "type": "south_of",
+                    "target": "f1",
+                    "value": null
+                },
+                {
+                    "type": "flows_into",
+                    "target": "f19",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 600.0,
+                "y": 250.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 60.0
+            }
+        },
+        {
+            "id": "f4",
+            "name": "Thareth River",
+            "category": "River",
+            "attributes": {
+                "description": "Slow, silver river fed by glacial melt.",
+                "flow_direction": "Northwest to southeast/east"
+            },
+            "relations": [
+                {
+                    "type": "within",
+                    "target": "f1",
+                    "value": null
+                },
+                {
+                    "type": "flows_to",
+                    "target": "f3",
+                    "value": "drifts eastward into the open plain"
+                }
+            ],
+            "position": {
+                "x": 400.0,
+                "y": 620.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 8.0
+            }
+        },
+        {
+            "id": "f5",
+            "name": "Thareth\u2019s Gate",
+            "category": "Settlement",
+            "attributes": {
+                "type": "Fortified river-port",
+                "importance": "Region's largest city",
+                "exports": "Tin, furs, amber"
+            },
+            "relations": [
+                {
+                    "type": "within",
+                    "target": "f1",
+                    "value": "Western mouth"
+                },
+                {
+                    "type": "adjacent_to",
+                    "target": "f4",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 200.0,
+                "y": 700.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 10.0
+            }
+        },
+        {
+            "id": "f6",
+            "name": "Spirefort",
+            "category": "Landmark",
+            "attributes": {
+                "description": "Old citadel overlooking cliffs.",
+                "location": "Above Thareth's Gate"
+            },
+            "relations": [
+                {
+                    "type": "part_of",
+                    "target": "f5",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 200.0,
+                "y": 715.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 5.0
+            }
+        },
+        {
+            "id": "f7",
+            "name": "Cendara",
+            "category": "Settlement",
+            "attributes": {
+                "description": "Smaller older riverside town with narrow lanes and ancient stone wharves.",
+                "specialty": "Glasswork crafted from fine river sand"
+            },
+            "relations": [
+                {
+                    "type": "east_of",
+                    "target": "f5",
+                    "value": "Roughly twenty miles"
+                },
+                {
+                    "type": "adjacent_to",
+                    "target": "f4",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 450.0,
+                "y": 600.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 8.0
+            }
+        },
+        {
+            "id": "f8",
+            "name": "Ruins of Othiriel",
+            "category": "Landmark",
+            "attributes": {
+                "description": "Once-grand citadel predating recorded history.",
+                "surroundings": "Swallowed by oak forest",
+                "inhabitants": "Small settlement of scholars and scavengers"
+            },
+            "relations": [
+                {
+                    "type": "near",
+                    "target": "f7",
+                    "value": "Connected by crumbling aqueduct"
+                }
+            ],
+            "position": {
+                "x": 450.0,
+                "y": 630.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 8.0
+            }
+        },
+        {
+            "id": "f9",
+            "name": "Veylen",
+            "category": "Settlement",
+            "attributes": {
+                "type": "Mountain mining town",
+                "agriculture": "Bitterroot and barley on terraces",
+                "mines": "Warren of mines beneath the town"
+            },
+            "relations": [
+                {
+                    "type": "within",
+                    "target": "f2",
+                    "value": "Northern slopes"
+                },
+                {
+                    "type": "near",
+                    "target": "f10",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 480.0,
+                "y": 850.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 6.0
+            }
+        },
+        {
+            "id": "f10",
+            "name": "Hearthwind Pass",
+            "category": "Landmark",
+            "attributes": {
+                "description": "Perilous northern route climbing between peaks.",
+                "condition": "Frequent avalanches during thaw"
+            },
+            "relations": [
+                {
+                    "type": "within",
+                    "target": "f2",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 500.0,
+                "y": 880.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 6.0
+            }
+        },
+        {
+            "id": "f11",
+            "name": "The Mirror Lakes",
+            "category": "Lake",
+            "attributes": {
+                "description": "Chain of five glacial tarns.",
+                "phenomenon": "Rumors of lights under water at dusk"
+            },
+            "relations": [
+                {
+                    "type": "north_of",
+                    "target": "f4",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 350.0,
+                "y": 750.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 15.0
+            }
+        },
+        {
+            "id": "f12",
+            "name": "Woaden Ford",
+            "category": "Settlement",
+            "attributes": {
+                "type": "Sprawling riverside village",
+                "function": "Waystation for caravans",
+                "event": "Market of Broken Blades (equinox)"
+            },
+            "relations": [
+                {
+                    "type": "adjacent_to",
+                    "target": "f4",
+                    "value": null
+                },
+                {
+                    "type": "adjacent_to",
+                    "target": "f13",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 320.0,
+                "y": 650.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 6.0
+            }
+        },
+        {
+            "id": "f13",
+            "name": "Lune River",
+            "category": "River",
+            "attributes": {},
+            "relations": [
+                {
+                    "type": "flows_into",
+                    "target": "f4",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 320.0,
+                "y": 700.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 5.0
+            }
+        },
+        {
+            "id": "f14",
+            "name": "The Blackfen",
+            "category": "Marsh",
+            "attributes": {
+                "description": "Marshy expanse of reed and fog.",
+                "phenomenon": "Peat fires burn underground; ruins rise from mire"
+            },
+            "relations": [
+                {
+                    "type": "east_of",
+                    "target": "f7",
+                    "value": null
+                },
+                {
+                    "type": "contains",
+                    "target": "f4",
+                    "value": "River slows and meanders"
+                }
+            ],
+            "position": {
+                "x": 650.0,
+                "y": 500.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 20.0
+            }
+        },
+        {
+            "id": "f15",
+            "name": "The Whispering Bridge",
+            "category": "Landmark",
+            "attributes": {
+                "description": "Cracked, moss-covered stone bridge.",
+                "sound": "Produces tones like human voices when wind blows"
+            },
+            "relations": [
+                {
+                    "type": "west_of",
+                    "target": "f5",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 150.0,
+                "y": 710.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 4.0
+            }
+        },
+        {
+            "id": "f16",
+            "name": "The Emberfields",
+            "category": "Field",
+            "attributes": {
+                "description": "Old battlefields left to overgrow.",
+                "flora": "Red flowers in spring marking ancient pyres"
+            },
+            "relations": [
+                {
+                    "type": "south_of",
+                    "target": "f1",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 400.0,
+                "y": 400.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 20.0
+            }
+        },
+        {
+            "id": "f17",
+            "name": "Ashmere",
+            "category": "Settlement",
+            "attributes": {
+                "type": "Quiet farming hamlet",
+                "function": "Stopover for travelers"
+            },
+            "relations": [
+                {
+                    "type": "near",
+                    "target": "f16",
+                    "value": "At the edge of The Emberfields"
+                }
+            ],
+            "position": {
+                "x": 400.0,
+                "y": 380.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 4.0
+            }
+        },
+        {
+            "id": "f18",
+            "name": "Stonefather\u2019s Step",
+            "category": "Landmark",
+            "attributes": {
+                "description": "Solitary column of rock carved naturally into a near-human shape.",
+                "lore": "Believed to be an ancient guardian"
+            },
+            "relations": [
+                {
+                    "type": "within",
+                    "target": "f4",
+                    "value": "Rising from the river"
+                }
+            ],
+            "position": {
+                "x": 550.0,
+                "y": 550.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 4.0
+            }
+        },
+        {
+            "id": "f19",
+            "name": "Distant Sea",
+            "category": "Sea",
+            "attributes": {},
+            "relations": [
+                {
+                    "type": "distance",
+                    "target": "f3",
+                    "value": null
+                }
+            ],
+            "position": {
+                "x": 950.0,
+                "y": 50.0
+            },
+            "geometry": {
+                "kind": "circle",
+                "radius": 30.0
+            }
+        }
+    ]
+}

@@ -1,4 +1,6 @@
 # -----------------------------
+# Python / Build
+# -----------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -92,4 +94,40 @@ desktop.ini
 secrets.json
 api_keys.json
 
+# -----------------------------
+# Docker / Containerization
+# -----------------------------
+# Local Docker environment
+docker-compose.override.yml
+docker-compose.local.yml
+docker-compose.dev.yml
 
+# Build caches & volumes
+.docker/
+.dockerignore
+Dockerfile~
+Dockerfile.*
+docker-build/
+docker-cache/
+docker-data/
+docker-volumes/
+
+# Docker Desktop / Colima / Podman helpers
+colima/
+podman/
+.mutagen/
+*.tar
+*.img
+*.qcow2
+
+# Container runtime files
+*.pid
+*.sock
+*.cid
+
+# -----------------------------
+# Misc / Dev Artifacts
+# -----------------------------
+*.tmp
+*.bak
+*.orig
