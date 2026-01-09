@@ -4,16 +4,13 @@ import type { WorldStyle } from "../../App";
 import "./WorldView.css";
 import assetsMap from "../../assets/assetsMap.json";
 
-const earthFiles = import.meta.glob("../../assets/themes/earth/*.png", {
+const defaultFiles = import.meta.glob("../../assets/themes/default/*.png", {
   eager: true,
   as: "url",
 });
 
 const themeFiles: Record<WorldStyle, Record<string, string>> = {
-  earth: earthFiles,
-  mars: earthFiles,
-  fantasy: earthFiles,
-  scifi: earthFiles
+  default: defaultFiles
 };
 
 function getAssetPathByWorldStyle(worldStyle: WorldStyle, propName: string, part: number): string | undefined {
@@ -74,7 +71,7 @@ export const WorldView: React.FC<WorldViewProps> = ({
 }, [world]);
 
   if (loading) {
-    return <div className="world-view generating-text">Generating world…</div>;
+    return <div className="world-view generating-text">Generating World…</div>;
   }
 
   if (error) {

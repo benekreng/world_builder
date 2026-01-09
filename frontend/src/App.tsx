@@ -5,10 +5,10 @@ import { PromptBar } from "./components/PromptBar/PromptBar";
 import { mockWorld, type World } from "./world";
 import "./App.css";
 
-export type WorldStyle = "mars" | "earth" | "fantasy" | "scifi";
+export type WorldStyle = "default";
 
 function App() {
-  const [worldStyle, setWorldStyle] = useState<WorldStyle>("mars");
+  const [worldStyle, setWorldStyle] = useState<WorldStyle>("default");
   const [lastPrompt, setLastPrompt] = useState("");
   const [busy, setBusy] = useState(false);
   const [world, setWorld] = useState<World | null>(null);
@@ -18,6 +18,7 @@ function App() {
 
   const handlePromptSubmit = async (prompt: string) => {
     // update last prompt + history
+    setWorldStyle("default");
     setLastPrompt(prompt);
     setPromptHistory((prev) => [prompt, ...prev]); // newest first
 
@@ -26,17 +27,6 @@ function App() {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     setWorld(mockWorld);
     setBusy(false);
-  };
-
-  // NEW: placeholder handlers for undo/redo
-  const handleUndo = () => {
-    // later: emit to backend
-    console.log("Undo clicked");
-  };
-
-  const handleRedo = () => {
-    // later: emit to backend
-    console.log("Redo clicked");
   };
 
   return (
@@ -60,11 +50,7 @@ function App() {
         />
 
         <StylePanel
-          worldStyle={worldStyle}
-          onChangeStyle={setWorldStyle}
           promptHistory={promptHistory}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
         />
       </main>
 
