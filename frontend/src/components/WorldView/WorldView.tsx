@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { type World } from "../../world";
 import type { WorldStyle } from "../../App";
 import "./WorldView.css";
@@ -43,7 +43,23 @@ export const WorldView: React.FC<WorldViewProps> = ({
 
   const tileSize = Math.max(Math.floor(baseTileSize * zoom), 4);
 
-  // Recalculate base tile size whenever world or container size changes
+const getGroupKey = (obj: any) => {
+  return obj.id
+};
+
+const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
+const highlightedCells = useMemo(() => {
+  if (!world || !hoveredGroup) return new Set<string>();
+
+  const cells = new Set<string>();
+  for (const obj of world.objects as any[]) {
+    if (getGroupKey(obj) === hoveredGroup) {
+      cells.add(`${obj.x},${obj.y}`);
+    }
+  }
+  return cells;
+}, [world, hoveredGroup]);
+
   useEffect(() => {
   if (!world) return;
 
@@ -52,7 +68,7 @@ export const WorldView: React.FC<WorldViewProps> = ({
     if (!el) return;
 
     const rect = el.getBoundingClientRect();
-    const padding = 32; // keep if you like a frame, or set to 0 for full bleed
+    const padding = 32; 
     const availableWidth = Math.max(rect.width - padding, 50);
     const availableHeight = Math.max(rect.height - padding, 50);
 
@@ -103,49 +119,52 @@ export const WorldView: React.FC<WorldViewProps> = ({
         }}
       >
         {/* Tiles */}
-        {world.tiles.map((tile, i) => (
-          <div
-            key={i}
-            className={`world-tile world-tile--${tile.type}`}
-            style={{
-              backgroundImage: `url(${getAssetPathByWorldStyle(styleVariant, tile.type, 0)})`,
-              left: tile.x * tileSize,
-              top: tile.y * tileSize,
-              width: tileSize,
-              height: tileSize,
-            }}
-          />
-        ))}
+        {world.tiles.map((tile, i) => {
+  const isHighlighted = highlightedCells.has(`${tile.x},${tile.y}`);
+
+  return (
+    <div
+      key={i}
+      className={`world-tile world-tile--${tile.type} ${isHighlighted ? "is-highlighted" : ""}`}
+      style={{
+        backgroundImage: `url(${getAssetPathByWorldStyle(styleVariant, tile.type, 0)})`,
+        left: tile.x * tileSize,
+        top: tile.y * tileSize,
+        width: tileSize,
+        height: tileSize,
+      }}
+    />
+  );
+})}
 
         {/* Objects */}
-        {world.objects.map((obj) => (
-  <div
-    key={obj.id}
-    className={`world-object world-object--${obj.kind}`}
-    style={{
-      backgroundImage: `url(${getAssetPathByWorldStyle(styleVariant, obj.kind, obj.part)})`,
-      left: obj.x * tileSize,
-      top: obj.y * tileSize,
-      width: tileSize,
-      height: tileSize,
-    }}
-    title={obj.name || obj.kind}
+        {world.objects.map((obj: any) => {
+  const groupKey = getGroupKey(obj);
+  const isHighlighted = hoveredGroup !== null && groupKey === hoveredGroup;
 
-    // City label only on the center tile (part = 1)
-    data-name={
-      obj.kind === "city" && obj.part === 3 
-        ? obj.name
-        : undefined
-    }
-
-    // Give data-part to ANY object that has a part (city, tree, etc.)
-    data-part={
-      obj.part !== undefined
-        ? String(obj.part)
-        : undefined
-    }
-  />
-))}
+  return (
+    <div
+      key={obj.id}
+      className={`world-object world-object--${obj.kind} ${isHighlighted ? "is-highlighted" : ""}`}
+      style={{
+        backgroundImage: `url(${getAssetPathByWorldStyle(styleVariant, obj.kind, obj.part)})`,
+        left: obj.x * tileSize,
+        top: obj.y * tileSize,
+        width: tileSize,
+        height: tileSize,
+      }}
+      title={obj.name || obj.kind}
+      onMouseEnter={() => setHoveredGroup(groupKey)}
+      onMouseLeave={() => setHoveredGroup(null)}
+      data-name={
+        obj.kind === "city" && obj.part === 3
+          ? obj.name
+          : undefined
+      }
+      data-part={obj.part !== undefined ? String(obj.part) : undefined}
+    />
+  );
+})}
       </div>
     </div>
 

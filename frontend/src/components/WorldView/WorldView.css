@@ -47,7 +47,18 @@
   background-size: 100% 100%;
   position: absolute;
   box-sizing: border-box;
-  border: 0.5px solid rgba(81, 117, 60, 0.747); 
+  border: 0.5px solid rgba(81, 117, 60, 0.747);
+  z-index: 1;
+}
+
+.world-tile.is-highlighted {
+  outline: 2px solid rgba(255, 214, 74, 0.95);
+  outline-offset: -2px;
+  z-index: 2;
+}
+
+.world-object.is-highlighted {
+  filter: drop-shadow(0 0 6px rgba(255, 214, 74, 0.9));
 }
 
 .world-tile--ground {
@@ -78,9 +89,13 @@
   background-repeat: no-repeat;
   background-position: center bottom;
   position: absolute;
-  pointer-events: none;
+
+  pointer-events: auto;   /* ⬅️ was none */
+  cursor: pointer;
+
   box-sizing: border-box;
   transform: none;
+  z-index: 5;
 }
 
 .world-object--city::after {
