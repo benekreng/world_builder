@@ -2,6 +2,7 @@ from langchain_openai import ChatOpenAI
 import os
 import yaml
 from typing import Optional
+from pathlib import Path
 
 # class ChatOpenRouter(ChatOpenAI):
 #     def __init__(
@@ -28,11 +29,16 @@ from typing import Optional
 class LLMService:
     def __init__(self):
         self.open_router_key = os.environ['OPEN_ROUTER_API_KEY']
+        # strip possible leading "Bearer " if someone exported the whole header value
+        if isinstance(self.open_router_key, str) and self.open_router_key.lower().startswith("bearer "):
+            self.open_router_key = self.open_router_key.split(None, 1)[1]
+
+        print(f"Debug key gefunden? { 'Ja' if self.open_router_key else 'Nein'}")
 
         if not self.open_router_key:
-            raise ValueError("Open Router API key not set")
+            raise ValueError("OPEN_ROUTER_API_KEY environment variable not set")
 
-        model_list = os.path.join(os.getcwd(), 'models.yaml')
+        model_list = Path(__file__).parent.parent / 'models.yaml'
         with open(model_list, 'r') as file:
             models = yaml.safe_load(file)
 
@@ -53,10 +59,15 @@ class LLMService:
                 api_key=self.open_router_key,
                 base_url="https://openrouter.ai/api/v1",
                 streaming=False,
-                default_headers={"X-OpenAI-Stream": "false", "max_output_tokens": "9123"},
+                    # Let the client set the Authorization header from `api_key`.
+                    # Avoid setting `Authorization` here to prevent duplicate "Bearer " prefixes.
+                    default_headers={
+                        "X-OpenAI-Stream": "false",
+                        "max_output_tokens": "9123",
+                    },
                 model_kwargs={"stream": False},
                 timeout=20,
-                max_retries=1
+                max_retries=1,
             )
 
             # self._clients[model_name] = ChatOpenRouter(

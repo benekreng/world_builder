@@ -6,8 +6,8 @@ from ..models import CoordinateUpdateModel
 import json
 
 PROMPT_DIR = Path(__file__).parent.parent / "prompts"
-EXTRACT_GEO_RELATIONS = (PROMPT_DIR / "extract_geo_relations.prompt").read_text()
-EXTRACT_COORDINATES = (PROMPT_DIR / "coodinate_update_step.prompt").read_text()
+EXTRACT_GEO_RELATIONS = (PROMPT_DIR / "extract_geo_relations.prompt").read_text(encoding="utf-8")
+EXTRACT_COORDINATES = (PROMPT_DIR / "coodinate_update_step.prompt").read_text(encoding="utf-8")
 
 class ExtractGeoRelations:
     def __init__(self, llm):

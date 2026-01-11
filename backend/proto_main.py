@@ -11,6 +11,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from dotenv import load_dotenv
 
 
+
 load_dotenv()
 
 # Initialize FastAPI app
