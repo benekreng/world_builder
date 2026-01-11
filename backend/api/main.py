@@ -10,7 +10,7 @@ app = FastAPI(title="API for World Builder")
 
 core = WorldBuilder()
 
-# In-Memory Speicher für Tasks (für MVP völlig okay)
+# In-Memory Speicher für Tasks 
 # Struktur: {"task_id": {"status": "processing", "result": None}}
 tasks: Dict[str, Dict[str, Any]] = {}
 
@@ -33,8 +33,7 @@ class TaskStatus(BaseModel):
 
 # Hilfsfunktion für den Hintergrund-Prozess
 async def run_map_pipeline(task_id: str, prompt: str):
-    try:
-        # Hier läuft die schwere Arbeit
+    try:       
         final_graph = await core.map_pipeline.run(prompt)
         tasks[task_id]["status"] = "completed"
         tasks[task_id]["result"] = final_graph.model_dump()
@@ -49,7 +48,6 @@ async def generate_map(request: GenerateRequest, background_tasks: BackgroundTas
     # Task initialisieren
     tasks[task_id] = {"status": "processing", "result": None}
     
-    # Prozess in den Hintergrund schieben
     background_tasks.add_task(run_map_pipeline, task_id, request.prompt)
     
     # Sofort ID zurückgeben, Frontend ist nicht blockiert
