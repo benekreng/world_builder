@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from fastapi.responses import Response
 
 from world_builder.app import WorldBuilder
@@ -26,6 +27,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+class GenerateRequest(BaseModel):
+    prompt: str
+
+@app.post("/generate-map")
+async def generate_map(request: GenerateRequest):
+    final_graph = await core.map_pipeline.run(request.prompt)
+    return final_graph.model_dump()
 
 @app.get("/")
 async def root():
