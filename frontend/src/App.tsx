@@ -2,31 +2,40 @@ import { useState } from "react";
 import { WorldView } from "./components/WorldView/WorldView";
 import { StylePanel } from "./components/StylePanel/StylePanel";
 import { PromptBar } from "./components/PromptBar/PromptBar";
-import { mockWorld, type World } from "./world";
+import { type World } from "./world";
+import { mapToWorld } from "./world.mapper";
 import "./App.css";
+import { Client } from "./api/client";
 
 export type WorldStyle = "default";
 
 function App() {
+  const client = new Client("http://localhost:8000");
   const [worldStyle, setWorldStyle] = useState<WorldStyle>("default");
   const [lastPrompt, setLastPrompt] = useState("");
   const [busy, setBusy] = useState(false);
   const [world, setWorld] = useState<World | null>(null);
-
-  // NEW: store prompt history for StylePanel
   const [promptHistory, setPromptHistory] = useState<string[]>([]);
 
+  setWorldStyle("default");
+
   const handlePromptSubmit = async (prompt: string) => {
-    // update last prompt + history
-    setWorldStyle("default");
+    
     setLastPrompt(prompt);
-    setPromptHistory((prev) => [prompt, ...prev]); // newest first
+    setPromptHistory((prev) => [prompt, ...prev]);
 
     setBusy(true);
-    // Simulate some work
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    setWorld(mockWorld);
-    setBusy(false);
+
+    try {
+      const taskId = await client.triggerWorldGeneration(prompt);
+      const worldDto = await client.getGeneratedWorld(taskId);
+      const world = mapToWorld(worldDto);
+      setWorld(world);
+    } catch (error) {
+      // Ignore errors for now
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
