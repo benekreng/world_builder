@@ -8,16 +8,19 @@ export interface WorldDto {
   entities: EntityDto[];
 }
 
-interface EntityDto {
+export interface EntityDto {
   id: string;
   category: string;
   metadata?: {
     name?: string;
+    description?: string;
+    color?: string;
+    [key: string]: any;
   };
   cells: CellDto[];
 }
 
-interface CellDto {
+export interface CellDto {
   x: number;
   y: number;
   prop: {

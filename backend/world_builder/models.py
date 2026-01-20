@@ -1,5 +1,6 @@
 from typing import List, Optional, Literal, Dict, Any, Union
 from pydantic import BaseModel, Field
+from enum import Enum # Added for operations
 
 # --- Types & Enums ---
 Category = Literal[
@@ -27,7 +28,7 @@ RelationType = Literal[
     "across"   # Add this for safety
 ]
 
-# --- Geometry Definitions (Must be at the top) ---
+#Geometry Definitions (Must be at the top)
 class Vec2(BaseModel):
     x: float = Field(description="X coordinate between 0 and 1000.")
     y: float = Field(description="Y coordinate between 0 and 1000.")
@@ -44,7 +45,7 @@ class SpineGeometry(BaseModel):
     kind: Literal["spine"] = Field(description="Geometry for areas/lines.")
     nodes: List[SpineNode] = Field(description="Nodes defining the spine and its volume.")
 
-# --- Extraction Models ---
+#Extraction Models
 class ExtractRelation(BaseModel):
     type: RelationType = Field(description="Type of relationship.")
     target: str = Field(description="ID of target feature.")
@@ -60,7 +61,7 @@ class ExtractFeature(BaseModel):
 class ExtractFeatureGraph(BaseModel):
     features: List[ExtractFeature]
 
-# --- Update Models ---
+#Update Models
 class CoordinateUpdateModel(BaseModel):
     positions: Dict[str, Vec2] = Field(
         default_factory=dict, 
@@ -71,7 +72,7 @@ class CoordinateUpdateModel(BaseModel):
         description="Map feature IDs to their specific shape (Circle or Spine)."
     )
 
-# --- Final Combined Models ---
+#Final Combined Models
 class FinalFeature(BaseModel):
     id: str
     name: str
@@ -83,3 +84,42 @@ class FinalFeature(BaseModel):
 
 class FinalFeatureGraph(BaseModel):
     features: List[FinalFeature]
+
+#Evolution Schemas
+#1. Graph Operations
+class OperationType(str, Enum):
+    ADD = "add"
+    EDIT = "edit"
+    REMOVE = "remove"
+
+class AddFeatureOp(BaseModel):
+    action: Literal[OperationType.ADD]
+    feature: FinalFeature
+
+class EditFeatureOp(BaseModel):
+    action: Literal[OperationType.EDIT]
+    id: str
+    changes: Dict[str, Any]
+
+class RemoveFeatureOp(BaseModel):
+    action: Literal[OperationType.REMOVE]
+    id: str
+
+GraphOperation = Union[AddFeatureOp, EditFeatureOp, RemoveFeatureOp]
+
+#2. LLM Response Wrappers
+class GenesisResponse(BaseModel):
+    """Output for the Initial Generation (Phase A)"""
+    fluid_ground_truth: str = Field(..., description="A thorough, novelistic description of the world state.")
+    initial_graph: FinalFeatureGraph = Field(..., description="The complete initial graph structure.")
+
+class EvolutionResponse(BaseModel):
+    """Output for the Update Loop (Phase B)"""
+    updated_fluid_ground_truth: str = Field(..., description="The rewritten fluid text incorporating user changes.")
+    graph_updates: List[GraphOperation] = Field(..., description="List of operations to update the graph.")
+
+#3. State Container for History
+class WorldState(BaseModel):
+    """The Object stored in the WorldBuilder History"""
+    fluid_truth: str
+    graph: FinalFeatureGraph

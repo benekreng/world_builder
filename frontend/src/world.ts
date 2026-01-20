@@ -6,7 +6,8 @@ export type TileType = "ground" | "water" | "mountain" | "field" | "path" | "san
 export interface Tile {
   x: number;         
   y: number;          
-  type: TileType;     
+  type: TileType;
+  entityId: string;     
 }
 
 export interface WorldObject {
@@ -23,17 +24,28 @@ export interface World {
   height: number;     
   tiles: Tile[];
   objects: WorldObject[];
+  //lookup for name/desc from an ID
+  meta: Record<string, { name?: string; description?: string; color?: string }>;
 }
 
 const WIDTH = 64;
-const HEIGHT = 32;
+const HEIGHT = 64;
 
 const tiles: Tile[] = [];
 
-for (let y = 0; y < HEIGHT; y++) {
-  for (let x = 0; x < WIDTH; x++) {
-    tiles.push({ x, y, type: "ground" });
+export function createBaseGrid(width: number, height: number): Tile[] {
+  const tiles: Tile[] = [];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      tiles.push({ 
+        x, 
+        y, 
+        type: "ground", 
+        entityId: "" 
+      });
+    }
   }
+  return tiles;
 }
 
 const TILE_OVERRIDES: Array<{ x: number; y: number; type: TileType }> = [
@@ -695,7 +707,14 @@ export const mockWorldDto: WorldDto = {
   ],
 };
 
-export const mockWorld: World = Mapper.mapToWorld(mockWorldDto);
+//export const mockWorld: World = Mapper.mapToWorld(mockWorldDto);
+export const mockWorld: World = {
+  width: WIDTH,
+  height: HEIGHT,
+  tiles: createBaseGrid(WIDTH, HEIGHT),
+  objects: [],
+  meta: {}
+};
 
 for (const { x, y, type } of TILE_OVERRIDES) {
   const tile = tiles.find(t => t.x === x && t.y === y);

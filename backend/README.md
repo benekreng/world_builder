@@ -65,3 +65,5 @@ source .venv/bin/activate
 python -m world_builder.main (LLM)
 python world_builder/process_map.py (for rasterization)
 python ./viewer.py (displying the json)
+
+export OPEN_ROUTER_API_KEY=""
