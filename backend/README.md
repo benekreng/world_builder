@@ -67,3 +67,13 @@ python world_builder/process_map.py (for rasterization)
 python ./viewer.py (displying the json)
 
 export OPEN_ROUTER_API_KEY=""
+
+references:
+    rockSimple:
+        https://www.artstation.com/artwork/8eLdrE
+    swamp_0:
+        https://www.craiyon.com/en/image/Xy4gUx08RdivniCjBEZDkA
+    tree_swamp_0:
+        https://dribbble.com/shots/10813439-Free-Swamp-2D-Tileset-Pixel-Art
+    sign_0:
+        https://de.pinterest.com/pin/621567186097037932/

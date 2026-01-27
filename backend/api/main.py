@@ -13,7 +13,7 @@ core = WorldBuilder()
 
 tasks: Dict[str, Dict[str, Any]] = {}
 
-origins = ["http://localhost", "http://localhost:3000", "http://localhost:5173"]
+origins = ["http://localhost", "http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -29,6 +29,17 @@ class TaskStatus(BaseModel):
     task_id: str
     status: str
     result: Optional[Dict[str, Any]] = None
+
+class HistoryItem(BaseModel):
+    id: str
+    parent_id: Optional[str]
+    prompt: str
+    type: str
+    is_current: bool
+
+class HistoryResponse(BaseModel):
+    nodes: list[HistoryItem]
+    current_node_id: Optional[str]
 
 async def run_world_generation_task(task_id: str, prompt: str):
     try:
@@ -100,50 +111,35 @@ async def root():
 
 @app.post("/reset")
 async def reset_world():
-    #Clears history to start a fresh Genesis
-    core.history = []
-    core.current_step = -1
+    core.reset()
     return {"message": "World reset successfully"}
 
-@app.post("/undo", response_model=TaskStatus)
-async def undo_step():
-    #Moves the history pointer back one step and returns the previous world
-    core.undo()
+@app.get("/history", response_model=HistoryResponse)
+async def get_history():
+    return {
+        "nodes": core.get_history_meta(),
+        "current_node_id": core.current_node_id
+    }
+
+@app.get("/history/{node_id}/prompts", response_model=list[str])
+async def get_node_prompts(node_id: str):
+    return core.get_ancestors(node_id)
+
+@app.post("/history/jump/{node_id}")
+async def jump_history(node_id: str):
+    success = core.jump_to_node(node_id)
+    if not success: 
+        raise HTTPException(status_code=404, detail="Node not found")
     
     current_state = core.get_current_state()
-    if not current_state:
-        raise HTTPException(status_code=400, detail="Cannot undo any further (or no world exists).")
-    
-    #Re-rasterize the previous state to show it on the frontend
     GRID_W = 64
     GRID_H = 64
     WORLD_EXTENT = 1000
     rasterizer = MapRasterizer(grid_width=GRID_W, grid_height=GRID_H, world_extent=WORLD_EXTENT)
     full_world_data = rasterizer.rasterize_to_json(current_state.graph)
+    return {"result": full_world_data}
 
-    return {
-        "task_id": "undo-action",
-        "status": "completed",
-        "result": full_world_data
-    }
-
-@app.post("/redo", response_model=TaskStatus)
-async def redo_step():
-    #Moves the history pointer forward one step
-    core.redo()
-    
-    current_state = core.get_current_state()
-    if not current_state:
-        raise HTTPException(status_code=400, detail="Cannot redo (at latest step).")
-
-    GRID_W = 64
-    GRID_H = 64
-    WORLD_EXTENT = 1000
-    rasterizer = MapRasterizer(grid_width=GRID_W, grid_height=GRID_H, world_extent=WORLD_EXTENT)
-    full_world_data = rasterizer.rasterize_to_json(current_state.graph)
-
-    return {
-        "task_id": "redo-action",
-        "status": "completed",
-        "result": full_world_data
-    }
+@app.delete("/history/{node_id}")
+async def delete_history_node(node_id: str):
+    core.delete_subtree(node_id)
+    return {"message": "Subtree deleted"}

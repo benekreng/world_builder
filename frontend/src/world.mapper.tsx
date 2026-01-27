@@ -2,8 +2,7 @@ import type { WorldDto } from "./world.dto";
 import type { World, WorldObject, Tile, TileType } from "./world";
 import { createBaseGrid } from "./world";
 
-// These are props that modify the SURFACE (The Tile)
-const TERRAIN_PROPS = new Set(["ground", "water", "field", "path", "sand", "snow", "mountain"]);
+const TERRAIN_PROPS = new Set(["ground", "water", "field", "path", "sand", "snow", "mountain", "swamp"]);
 
 const DEFAULT_W = 64;
 const DEFAULT_H = 64;

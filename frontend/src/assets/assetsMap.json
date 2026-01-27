@@ -33,6 +33,10 @@
     "tree_sakura": [
         "tree_sakura_0.png"
     ],
+    "tree_swamp": [
+        "tree_swamp_0.png",
+        "tree_swamp_1.png"
+    ],
     "water": [
         "water_0.png"
     ],
@@ -42,18 +46,29 @@
     "sand": [
         "sand_0.png"
     ],
+    "swamp": [
+        "swamp_0.png"
+    ],
     "path": [
         "path_0.png"
     ],
     "snow": [
         "snow_0.png"
     ],
-    "rock": [
-        "rock_0.png",
-        "rock_1.png"
+    "mountain": [
+        "mountain_0.png",
+        "mountain_1.png"
+    ],
+    "rockSimple": [
+        "rockSimple_0.png",
+        "rockSimple_1.png",
+        "rockSimple_2.png"
     ],
     "bridge": [
         "bridge_0.png",
         "bridge_1.png"
+    ],
+    "sign": [
+        "sign_0.png"
     ]
 }

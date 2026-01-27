@@ -47,22 +47,41 @@ export const resetWorld = async (): Promise<void> => {
   }
 };
 
-export const undoWorld = async (): Promise<WorldDto> => {
-  const url = `${API_BASE_URL}/undo`;
-  const response = await fetch(url, { method: "POST" });
-  if (!response.ok) {
-    throw new Error("Undo not available"); 
-  }
-  const data = await response.json();
-  return data.result as WorldDto; 
-};
+//History
+export interface HistoryNode {
+  id: string;
+  parent_id: string | null;
+  prompt: string;
+  type: "genesis" | "add" | "edit" | "remove" | "mixed";
+  is_current: boolean;
+}
 
-export const redoWorld = async (): Promise<WorldDto> => {
-  const url = `${API_BASE_URL}/redo`;
-  const response = await fetch(url, { method: "POST" });
-  if (!response.ok) {
-    throw new Error("Redo not available"); 
-  }
-  const data = await response.json();
-  return data.result as WorldDto;
-};
+export interface HistoryResponse {
+  nodes: HistoryNode[];
+  current_node_id: string | null;
+}
+
+export async function fetchHistory(): Promise<HistoryResponse> {
+  const res = await fetch(`${API_BASE_URL}/history`);
+  if (!res.ok) throw new Error("Failed to fetch history");
+  return res.json();
+}
+
+export async function fetchNodePrompts(nodeId: string): Promise<string[]> {
+  const res = await fetch(`${API_BASE_URL}/history/${nodeId}/prompts`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function jumpToNode(nodeId: string) {
+  const res = await fetch(`${API_BASE_URL}/history/jump/${nodeId}`, { method: "POST" });
+  if (!res.ok) throw new Error("Failed to jump history");
+  const data = await res.json();
+  return data.result; 
+}
+
+export async function deleteNode(nodeId: string) {
+  const res = await fetch(`${API_BASE_URL}/history/${nodeId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete history node");
+  return res.json();
+}

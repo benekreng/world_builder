@@ -2,7 +2,6 @@ import numpy as np
 import random
 from PIL import Image, ImageDraw
 from .models import FinalFeatureGraph
-# IMPORT THE NEW GENERATOR
 from .road_generator import RoadGenerator
 
 class MapRasterizer:
@@ -12,6 +11,7 @@ class MapRasterizer:
         self.scale_x = grid_width / world_extent
         self.scale_y = grid_height / world_extent
         
+        #Priority: Higher numbers draw on top of lower numbers
         self.PRIORITY = {
             "Region": 0, "Field": 1, "Marsh": 2, "Forest": 3,
             "MountainRange": 4, "Road": 5, "Lake": 6, 
@@ -27,7 +27,16 @@ class MapRasterizer:
         }
         
         self.CATEGORY_IDS = {k: i for i, k in enumerate(self.PRIORITY.keys(), 1)}
-        self.TREE_TYPES = ["tree_oak", "tree_pine", "tree_palm", "tree_birch", "tree_maple", "tree_sakura"]
+        
+        self.TREES_SEASONAL = ["tree_oak", "tree_pine", "tree_birch", "tree_maple"]
+        self.TREES_TROPICAL = ["tree_palm"]
+        self.TREES_SWAMP = ["tree_swamp"]
+        self.ROCKS_SIMPLE = ["rockSimple"]
+        self.LANDMARKS = ["sign"]
+        
+        #City Pairs
+        self.CITY_PAIRS = [(0, 1), (2, 3), (4, 5), (6, 7)]
+        self.CITY_SINGLE_IDX = 6 
 
     def _scale_point(self, x, y, r):
         sx = x * self.scale_x
@@ -65,6 +74,9 @@ class MapRasterizer:
             _, _, sr = self._scale_point(0, 0, feature.geometry.radius)
         else:
             sx, sy, sr = self._scale_point(feature.position.x, feature.position.y, feature.geometry.radius)
+        
+        #minimum radius
+        sr = max(sr, 1.0)
         if feature.geometry.kind == "circle":
             draw.ellipse([sx-sr, sy-sr, sx+sr, sy+sr], fill=1)
         elif feature.geometry.kind == "spine":
@@ -73,202 +85,191 @@ class MapRasterizer:
                 draw.ellipse([cx-r, cy-r, cx+r, cy+r], fill=1)
         return np.array(img, dtype=bool)
 
-    def _create_square_mask_from_plus(self, mask):
-        y_idxs, x_idxs = np.where(mask)
-        if len(y_idxs) == 0: return mask
-        min_y, min_x = np.min(y_idxs), np.min(x_idxs)
-        new_mask = np.zeros_like(mask)
-        new_mask[min_y:min_y+2, min_x:min_x+2] = True
-        return new_mask
+    def _is_surrounded(self, x, y, grid, target_val, radius=2):
+        y_min = max(0, y - radius)
+        y_max = min(self.height, y + radius + 1)
+        x_min = max(0, x - radius)
+        x_max = min(self.width, x + radius + 1)
+        window = grid[y_min:y_max, x_min:x_max]
+        if window.size == 0: return False
+        return np.all(window == target_val)
 
-    def _find_new_position_mask(self, feature, landscape_grid, water_ids):
-        sx, sy, _ = self._scale_point(feature.position.x, feature.position.y, 0)
-        cx, cy = int(sx), int(sy)
-        for dist in range(1, 8): 
-            for dx in range(-dist, dist + 1):
-                for dy in range(-dist, dist + 1):
-                    if max(abs(dx), abs(dy)) != dist: continue
-                    nx, ny = cx + dx, cy + dy
-                    if 0 <= nx < self.width and 0 <= ny < self.height:
-                        if landscape_grid[ny, nx] not in water_ids:
-                            return self._get_feature_mask(feature, override_pos=(nx, ny))
-        return self._get_feature_mask(feature)
-
-    def _get_cell_prop(self, category, is_road=False, is_bridge=False):
-        """Maps Categories to the specific asset names provided."""
-        name = None
+    #Biome Context
+    def _get_biome_context(self, category, x, y, is_deep=False):
         
-        if is_bridge: return {"name": "bridge", "part": 0}
-        if is_road: return {"name": "path", "part": 0}
+        #1. Water
+        if category in ["River", "Lake", "Sea"]:
+            return {"base": "water", "base_part": 0, "overlay": None, "overlay_part": 0}
 
-        if category == "Settlement": name = "city"
-        elif category == "Landmark": name = "city"
-        elif category == "River": name = "water"
-        elif category == "Lake": name = "water"
-        elif category == "Sea": name = "water"
-        elif category == "Marsh": name = "water"
-        elif category == "MountainRange": name = "rock"
-        elif category == "Forest": name = random.choice(self.TREE_TYPES)
-        elif category == "Region": name = "ground"
-        elif category == "Field": name = "ground"
-        
-        if name:
-            return {"name": name, "part": 0}
-        return None
-    
+        #2. Mountains
+        if category == "MountainRange":
+            if is_deep:
+                return {"base": "mountain", "base_part": 1, "overlay": None, "overlay_part": 0}
+            is_snow = random.random() > 0.7
+            return {"base": "mountain", "base_part": 1 if is_snow else 0, "overlay": None, "overlay_part": 0}
+
+        #3. Marsh
+        if category == "Marsh":
+            overlay = None
+            overlay_part = 0
+            if random.random() < 0.6: 
+                overlay = "tree_swamp"
+                overlay_part = random.randint(0, 1)
+            return {"base": "swamp", "base_part": 0, "overlay": overlay, "overlay_part": overlay_part}
+
+        #4. Forest
+        if category == "Forest":
+            overlay = None
+            overlay_part = 0
+            if random.random() < 0.8:
+                overlay = random.choice(self.TREES_SEASONAL)
+                overlay_part = 0
+            return {"base": "ground", "base_part": 0, "overlay": overlay, "overlay_part": overlay_part}
+
+        #5. Landmark
+        if category == "Landmark":
+            #Base: Ground, Overlay: Sign
+            return {"base": "ground", "base_part": 0, "overlay": "sign", "overlay_part": 0}
+
+        #6. Field/Region
+        if category == "Field" or category == "Region":
+            r = random.random()
+            if r < 0.05: 
+                return {"base": "ground", "base_part": 0, "overlay": "rockSimple", "overlay_part": random.randint(0, 2)}
+            if r < 0.08: 
+                return {"base": "ground", "base_part": 0, "overlay": "tree_oak", "overlay_part": 0}
+            return {"base": "ground", "base_part": 0, "overlay": None, "overlay_part": 0}
+
+        #Default
+        return {"base": "ground", "base_part": 0, "overlay": None, "overlay_part": 0}
+
     def rasterize_to_json(self, graph: FinalFeatureGraph):
-        # 1. SETUP IMAGES
         img_landscape = Image.new("I", (self.width, self.height), 0)
         draw_landscape = ImageDraw.Draw(img_landscape)
         
-        sorted_features = sorted(graph.features, key=lambda f: self.PRIORITY.get(f.category, 0))
+        #1. Validation
+        valid_features = []
+        for f in graph.features:
+            if not f.position:
+                f.position = type("Vec2", (), {"x": 500, "y": 500})()
+            if not f.geometry:
+                f.geometry = type("Geometry", (), {"kind": "circle", "radius": 15})()
+            valid_features.append(f)
+
+        sorted_features = sorted(valid_features, key=lambda f: self.PRIORITY.get(f.category, 0))
         feature_lookup = {i: f for i, f in enumerate(sorted_features, 1)}
         
-        #Phase 1: Draw Base Landscape (Rivers, Terrain) - No Cities
+        #2. Draw Masks
         for i, feature in enumerate(sorted_features, 1):
             if feature.category == "Settlement": continue
-            if not feature.geometry: continue
-
-            if feature.category == "River":
-                if feature.geometry.kind == "spine":
-                    points = self._generate_interpolated_points(feature.geometry.nodes)
-                    xy_points = [(p[0], p[1]) for p in points]
-                    for j in range(len(xy_points) - 1):
-                        width = 2 if points[j][2] > 0.6 else 1
-                        draw_landscape.line([xy_points[j], xy_points[j+1]], fill=i, width=width)
-            else:
+            try:
                 if feature.geometry.kind == "circle":
                     sx, sy, sr = self._scale_point(feature.position.x, feature.position.y, feature.geometry.radius)
+                    sr = max(sr, 1.0)
                     draw_landscape.ellipse([sx-sr, sy-sr, sx+sr, sy+sr], fill=i)
                 elif feature.geometry.kind == "spine":
                     points = self._generate_interpolated_points(feature.geometry.nodes)
-                    for (cx, cy, r) in points:
-                        draw_landscape.ellipse([cx-r, cy-r, cx+r, cy+r], fill=i)
+                    if feature.category == "River":
+                        xy = [(p[0], p[1]) for p in points]
+                        for j in range(len(xy)-1):
+                            w = 2 if points[j][2] > 0.6 else 1
+                            draw_landscape.line([xy[j], xy[j+1]], fill=i, width=w)
+                    else:
+                        for (cx, cy, r) in points:
+                            draw_landscape.ellipse([cx-r, cy-r, cx+r, cy+r], fill=i)
+            except Exception: pass
 
         grid_final = np.array(img_landscape)
-        river_id_val = self.CATEGORY_IDS["River"]
-        water_ids = [river_id_val, self.CATEGORY_IDS["Sea"], self.CATEGORY_IDS["Lake"]]
-
-        #Track City Centers for Roads
+        
+        #3. Settlement
         city_centers = []
-
-        #Phase 2: Place Settlements
         for i, feature in enumerate(sorted_features, 1):
             if feature.category != "Settlement": continue
-            if not feature.geometry: continue
+            mask = self._get_feature_mask(feature)
+            y_idxs, x_idxs = np.where(mask)
+            if len(y_idxs) == 0: continue
+            cx, cy = int(np.mean(x_idxs)), int(np.mean(y_idxs))
+            city_centers.append((cx, cy))
+            grid_final[mask] = i
 
-            mask_city = self._get_feature_mask(feature)
-            pixel_count = np.sum(mask_city)
+        #4. Roads
+        try:
+            road_gen = RoadGenerator(self.width, self.height, grid_final, feature_lookup)
+            road_pixels = road_gen.generate_network(city_centers)
+            road_id = 999 
+            for (rx, ry) in road_pixels:
+                val = grid_final[ry, rx]
+                if val not in feature_lookup or feature_lookup[val].category != "Settlement":
+                     grid_final[ry, rx] = road_id
+        except: road_pixels = []
 
-            if pixel_count == 5:
-                mask_city = self._create_square_mask_from_plus(mask_city)
-                pixel_count = 4 
-            
-            underlying_terrain = grid_final[mask_city]
-            intersects_river = np.any(underlying_terrain == river_id_val)
-            
-            final_mask = mask_city
-            
-            if intersects_river:
-                if pixel_count > 12: 
-                    #Large City: Stay there
-                    pass 
-                else:
-                    #Small City: Move
-                    final_mask = self._find_new_position_mask(feature, grid_final, water_ids)
-            
-            # Place City on Grid
-            grid_final[final_mask] = i
-            
-            # Calculate center for Roads
-            y_idxs, x_idxs = np.where(final_mask)
-            if len(x_idxs) > 0:
-                cx = int(np.mean(x_idxs))
-                cy = int(np.mean(y_idxs))
-                city_centers.append((cx, cy))
+        #5. Export
+        entities_by_id = {}
+        occupied = np.zeros((self.height, self.width), dtype=bool)
 
-        #Phase 3: Road Generation
-        road_gen = RoadGenerator(self.width, self.height, grid_final, self.CATEGORY_IDS)
-        road_pixels = road_gen.generate_network(city_centers)
-        
-        # Assign a NEW unique ID for the road network (higher than any existing feature)
-        road_feature_id = max(feature_lookup.keys()) + 1
-        
-        # Helper to track if a road is a bridge
-        road_is_bridge = {}
+        def add_cell(fid, category, meta, cell_data):
+            if fid not in entities_by_id:
+                final_meta = meta.copy()
+                if "name" not in final_meta and hasattr(feature_lookup.get(val, None), "name"):
+                     final_meta["name"] = feature_lookup[val].name
+                elif "name" not in final_meta:
+                     final_meta["name"] = "Unknown"
 
-        for (rx, ry) in road_pixels:
-            current_id = grid_final[ry, rx]
-            #Look up the existing feature
-            existing_feature = feature_lookup.get(current_id)
-            #Protect Cities
-            if existing_feature and existing_feature.category == "Settlement":
-                continue
-            #add bridge
-            if existing_feature and existing_feature.category in ["River", "Sea", "Lake"]:
-                road_is_bridge[(rx, ry)] = True
-            #Write the Road ID
-            grid_final[ry, rx] = road_feature_id
+                entities_by_id[fid] = {
+                    "id": fid,
+                    "category": category,
+                    "metadata": final_meta,
+                    "cells": []
+                }
+            entities_by_id[fid]["cells"].append(cell_data)
 
-        #Phase 4: Export
-        
+        for y in range(self.height):
+            for x in range(self.width):
+                val = grid_final[y, x]
+                if val == 0: continue
+                if occupied[y, x]: continue 
 
-        entities = []
-        # 4a: Export Standard Features
-        for int_id, feature in feature_lookup.items():
-            y_idxs, x_idxs = np.where(grid_final == int_id)
-            if len(x_idxs) == 0: continue
+                #Roads
+                if val == road_id:
+                    add_cell("generated_roads", "Road", 
+                             {"name": "Trade Routes", "description": "Roads connecting the settlements."}, 
+                             {"x": x, "y": y, "prop": {"name": "path", "part": 0}})
+                    continue
 
-            #Merge LLM Attributes with basic Metadata
-            meta = feature.attributes.copy()
-            meta["name"] = feature.name
-            meta["color"] = self.COLORS.get(feature.category, "#000000")
-            #Making sure there is meta data
-            if "description" not in meta:
-                meta["description"] = f"A {feature.category} named {feature.name}."
+                feature = feature_lookup.get(val)
+                if not feature: continue
 
-            cells = []
-            for y, x in zip(y_idxs, x_idxs):
-                # NEW: Generate Prop Object
-                prop_data = self._get_cell_prop(feature.category)
+                #Metadata prep
+                meta = feature.attributes.copy()
+                meta["name"] = feature.name
+                meta["color"] = self.COLORS.get(feature.category, "#000")
+
+                #Settlement
+                if feature.category == "Settlement":
+                    #Try vertical pair
+                    if y < self.height - 1 and grid_final[y+1, x] == val and not occupied[y+1, x]:
+                        pair = random.choice(self.CITY_PAIRS)
+                        add_cell(feature.id, "Settlement", meta, {"x": x, "y": y, "prop": {"name": "city", "part": pair[0]}})
+                        add_cell(feature.id, "Settlement", meta, {"x": x, "y": y+1, "prop": {"name": "city", "part": pair[1]}})
+                        occupied[y, x] = True
+                        occupied[y+1, x] = True
+                    else:
+                        add_cell(feature.id, "Settlement", meta, {"x": x, "y": y, "prop": {"name": "city", "part": self.CITY_SINGLE_IDX}})
+                        occupied[y, x] = True
+                    continue
+
+                #Biome/Scatter
+                is_deep = False
+                if feature.category == "MountainRange":
+                    is_deep = self._is_surrounded(x, y, grid_final, val, radius=2)
+
+                context = self._get_biome_context(feature.category, x, y, is_deep=is_deep)
                 
-                cells.append({
-                    "x": int(x), 
-                    "y": int(y), 
-                    "prop": prop_data
-                })
-
-            entities.append({
-                "id": feature.id,
-                "metadata": meta,
-                "category": feature.category,
-                "cells": cells
-            })
-            
-        # 4b: Export Generated Roads
-        road_y, road_x = np.where(grid_final == road_feature_id)
-        
-        if len(road_x) > 0:
-            road_cells = []
-            for y, x in zip(road_y, road_x):
-                is_bridge = road_is_bridge.get((x, y), False)
-                prop_data = self._get_cell_prop("Road", is_road=True, is_bridge=is_bridge)
-
-                road_cells.append({
-                    "x": int(x), 
-                    "y": int(y), 
-                    "prop": prop_data
-                })
+                add_cell(feature.id, feature.category, meta, 
+                         {"x": x, "y": y, "prop": {"name": context["base"], "part": context["base_part"]}})
                 
-            entities.append({
-                "id": "generated_roads",
-                "metadata": {
-                    "name": "Trade Routes",
-                    "description": "Roads connecting the settlements.",
-                    "color": self.COLORS["Road"]
-                },
-                "category": "Road",
-                "cells": road_cells
-            })
+                if context["overlay"]:
+                    add_cell(feature.id, feature.category, meta, 
+                             {"x": x, "y": y, "prop": {"name": context["overlay"], "part": context["overlay_part"]}})
 
-        return {"entities": entities}
+        return {"entities": list(entities_by_id.values())}

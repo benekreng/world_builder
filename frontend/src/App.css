@@ -1,49 +1,78 @@
 .app {
-  display: grid;
-  grid-template-rows: auto 1fr auto; 
-  height: 100vh;                      
-  width: 100vw;                      
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
 
 .app-header {
+  flex: 0 0 auto;
   padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ccc;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #fff;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.app-title {
-  margin: 0;
-  font-size: 1.25rem;
+.app-title { 
+  margin: 0; 
+  font-size: 1.25rem; 
+  color: #2c3e50; 
 }
-
-.app-subtitle {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #666;
+.app-subtitle { 
+  margin: 0; 
+  font-size: 0.85rem; 
+  color: #666; 
 }
 
 .app-main {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  overflow: hidden;
+  flex: 1;
+  display: flex; 
+  flex-direction: row;
+  overflow: hidden; 
+  position: relative;
+}
 
-  height: 100%;   
-  min-height: 0;  
+.map-container {
+  flex: 1; 
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  background: #e5e5e5;
+}
+
+.history-column {
+  width: 400px;
+  flex: 0 0 400px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #bbb;
+  background: #fdfcf8;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 5;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+}
+
+.tools-column {
+  width: 300px;
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #ccc;
+  background: #f4f1ea;
+  overflow-y: auto;
+  z-index: 6;
 }
 
 .app-footer {
+  flex: 0 0 auto;
   padding: 0.75rem 1.5rem;
   border-top: 1px solid #eee;
-}
-
-@media (max-width: 900px) {
-  .app-main {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
+  background: #fff;
+  z-index: 10;
 }

@@ -1,6 +1,7 @@
 from typing import List, Optional, Literal, Dict, Any, Union
 from pydantic import BaseModel, Field
-from enum import Enum # Added for operations
+from enum import Enum
+import uuid
 
 # --- Types & Enums ---
 Category = Literal[
@@ -17,18 +18,20 @@ RelationType = Literal[
     "adjacent_to",
     "distance",
     "flows_from",
+    "flows_within",
     "flows_into",
     "flows_to",
     "part_of",
     "contains",
     "within",
     "between",
-    "on",      # Add this
-    "at",      # Add this for safety
-    "across"   # Add this for safety
+    "on",
+    "at",
+    "across",
+    "unknown"
 ]
 
-#Geometry Definitions (Must be at the top)
+#Geometry Definitions
 class Vec2(BaseModel):
     x: float = Field(description="X coordinate between 0 and 1000.")
     y: float = Field(description="Y coordinate between 0 and 1000.")
@@ -120,6 +123,10 @@ class EvolutionResponse(BaseModel):
 
 #3. State Container for History
 class WorldState(BaseModel):
-    """The Object stored in the WorldBuilder History"""
+    #The Object stored in the WorldBuilder History
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    parent_id: Optional[str] = None
     fluid_truth: str
     graph: FinalFeatureGraph
+    prompt: str = ""
+    step_type: str = "genesis"

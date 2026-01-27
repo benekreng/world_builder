@@ -63,19 +63,68 @@ class WorldBuilder:
         self.map_pipeline = MapPipeline(self.llm)
 
         #History State Management
-        self.history: list[WorldState] = []
-        self.current_step = -1
+        self.nodes: Dict[str, WorldState] = {}
+        self.current_node_id: str | None = None
+        self.root_node_id: str | None = None
 
     def get_current_state(self) -> WorldState | None:
-        if self.current_step >= 0 and self.current_step < len(self.history):
-            return self.history[self.current_step]
+        if self.current_node_id and self.current_node_id in self.nodes:
+            return self.nodes[self.current_node_id]
         return None
 
-    def undo(self):
-        if self.current_step > 0: self.current_step -= 1
+    def get_history_meta(self):
+        meta_list = []
+        for nid, state in self.nodes.items():
+            meta_list.append({
+                "id": state.id,
+                "parent_id": state.parent_id,
+                "prompt": state.prompt,
+                "type": state.step_type,
+                "is_current": (nid == self.current_node_id)
+            })
+        return meta_list
+
+    def get_ancestors(self, target_node_id: str) -> list[str]:
+        path = []
+        curr = target_node_id
+        while curr and curr in self.nodes:
+            node = self.nodes[curr]
+            path.append(node.prompt)
+            curr = node.parent_id
+        return list(reversed(path))
+
+    def jump_to_node(self, node_id: str):
+        if node_id in self.nodes:
+            self.current_node_id = node_id
+            return True
+        return False
+
+    def delete_subtree(self, node_id: str):
+        if node_id not in self.nodes: return
         
-    def redo(self):
-        if self.current_step < len(self.history) - 1: self.current_step += 1
+        #1. Find children
+        children = [nid for nid, n in self.nodes.items() if n.parent_id == node_id]
+        
+        #2. Recurse
+        for child in children:
+            self.delete_subtree(child)
+            
+        #3. Delete self
+        if self.current_node_id == node_id:
+            #If we delete the current node, jump to parent
+            self.current_node_id = self.nodes[node_id].parent_id
+            
+        del self.nodes[node_id]
+        
+        if node_id == self.root_node_id:
+            self.root_node_id = None
+            self.current_node_id = None
+    
+    #Wipes entire history
+    def reset(self):
+        self.nodes = {}
+        self.current_node_id = None
+        self.root_node_id = None
 
     #Genesis
     async def create_world(self, prompt: str):
@@ -101,11 +150,15 @@ class WorldBuilder:
 
         new_state = WorldState(
             fluid_truth=response.fluid_ground_truth, 
-            graph=response.initial_graph
+            graph=response.initial_graph,
+            prompt=prompt,
+            step_type="genesis",
+            parent_id=None
         )
         
-        self.history = [new_state]
-        self.current_step = 0
+        self.nodes[new_state.id] = new_state
+        self.root_node_id = new_state.id
+        self.current_node_id = new_state.id
         
         return new_state
 
@@ -142,8 +195,36 @@ class WorldBuilder:
             USER ACTION: {user_prompt}
             
             TASK:
-            1. Update the Fluid Truth. **CRITICAL:** Do NOT summarize. You must preserve existing details, history, and atmosphere from the previous text unless the User Action directly contradicts them. If the text gets longer, that is good.
-            2. Output Graph Operations to sync the map data with your new text.
+            1. Update the Fluid Truth. Preserving existing details unless contradicted.
+            2. Output Graph Operations to sync the map data.
+            
+            CRITICAL GEOMETRY RULES:
+            - Every "ADD" or "EDIT" operation MUST include a valid "geometry" and "position".
+            - Do NOT return null for geometry.
+            - Coordinates are x,y (0-1000). (0,0) is Top-Left.
+            
+            ONE-SHOT EXAMPLE (Follow this format):
+            {{
+                "updated_fluid_ground_truth": "The city of Eldoria expanded...",
+                "graph_updates": [
+                    {{
+                        "action": "add",
+                        "feature": {{
+                            "id": "f5", "name": "Eldoria", "category": "Settlement",
+                            "attributes": {{ "population": "large" }},
+                            "position": {{ "x": 450, "y": 300 }},
+                            "geometry": {{ "kind": "circle", "radius": 20 }}
+                        }}
+                    }},
+                    {{
+                        "action": "edit", 
+                        "id": "f2",
+                        "changes": {{
+                            "geometry": {{ "kind": "spine", "nodes": [ {{ "position": {{ "x": 100, "y": 100 }}, "radius": 5 }} ] }}
+                        }}
+                    }}
+                ]
+            }}
             
             {format_instructions}""",
             input_variables=["fluid_truth", "features", "user_prompt"],
@@ -162,6 +243,22 @@ class WorldBuilder:
         #2. Apply operations
         new_graph = copy.deepcopy(current_state.graph)
         new_features = new_graph.features
+
+        ops = response.graph_updates
+        has_add = any(isinstance(op, AddFeatureOp) for op in ops)
+        has_edit = any(isinstance(op, EditFeatureOp) for op in ops)
+        has_remove = any(isinstance(op, RemoveFeatureOp) for op in ops)
+
+        #Logic for step_type
+        step_type = "mixed"
+        if has_add and not has_edit and not has_remove: 
+            step_type = "add"
+        elif has_remove and not has_add and not has_edit: 
+            step_type = "remove"
+        elif has_edit and not has_add and not has_remove: 
+            step_type = "edit"
+        elif not ops: 
+            step_type = "edit"
 
         for op in response.graph_updates:
             if isinstance(op, AddFeatureOp):
@@ -189,12 +286,14 @@ class WorldBuilder:
         #3. Save State
         new_state = WorldState(
             fluid_truth=response.updated_fluid_ground_truth,
-            graph=new_graph
+            graph=new_graph,
+            prompt=user_prompt,
+            step_type=step_type,
+            parent_id=current_state.id
         )
 
-        self.history = self.history[:self.current_step + 1]
-        self.history.append(new_state)
-        self.current_step += 1
+        self.nodes[new_state.id] = new_state
+        self.current_node_id = new_state.id
 
         return new_state
 

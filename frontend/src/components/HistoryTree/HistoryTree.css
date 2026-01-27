@@ -1,0 +1,136 @@
+.history-tree-container {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  background-color: #fdfcf8;
+}
+
+.history-header-area {
+  padding: 10px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.history-title { margin: 0; font-size: 1.1rem; color: #333; }
+.history-subtitle { margin: 0; font-size: 0.8rem; color: #888; font-style: italic; }
+
+.tree-viewport {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  cursor: grab;
+}
+
+.tree-viewport:active {
+  cursor: grabbing;
+}
+
+.tree-edge {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+  transition: stroke 0.3s;
+}
+
+.tree-node-group {
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.tree-node-group:hover .node-circle {
+  stroke: #444;
+}
+
+.node-circle {
+  stroke: #888;
+  stroke-width: 2px;
+  transition: all 0.2s;
+}
+
+.node-circle.selected {
+  stroke: #000;
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.3));
+}
+
+.node-dot {
+  fill: #333;
+  pointer-events: none;
+}
+
+.fill-genesis { fill: #fff; stroke: #d4a017; }
+.fill-add { fill: #d4edda; stroke: #28a745; }
+.fill-remove { fill: #f8d7da; stroke: #dc3545; }
+.fill-edit { fill: #d1ecf1; stroke: #17a2b8; }
+.fill-mixed { fill: #e2e3e5; stroke: #383d41; }
+
+.history-popup {
+  position: absolute;
+  width: 220px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  border-radius: 6px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-family: sans-serif;
+}
+
+.popup-header { 
+    background: #f4f4f4; 
+    padding: 8px; 
+    border-bottom: 1px solid #ddd; 
+    display: flex; 
+    justify-content: space-between;
+}
+.popup-title { 
+    font-weight: bold; 
+    font-size: 0.8rem; 
+}
+.popup-close-x { 
+    border: none; 
+    background: none; 
+    cursor: pointer; 
+}
+.popup-body { 
+    padding: 10px; 
+}
+.popup-prompt { 
+    font-size: 0.8rem; 
+    font-style: italic; 
+    max-height: 100px; 
+    overflow-y: auto; 
+    margin: 0 0 5px 0; 
+}
+.popup-actions { 
+    padding: 8px; 
+    border-top: 1px solid #eee; 
+    display: flex; 
+    gap: 5px; 
+}
+.action-btn { 
+    flex: 1; 
+    padding: 5px; 
+    cursor: pointer; 
+    font-size: 0.75rem; 
+    border-radius: 3px; 
+    border: 1px solid #ccc; 
+}
+.jump-btn { 
+    background: #333; 
+    color: #fff; 
+}
+.delete-btn { 
+    background: #fee; 
+    color: #c00; 
+    border-color: #fcc; 
+}
