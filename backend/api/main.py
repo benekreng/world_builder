@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import Dict, Any, Optional
 from world_builder.app import WorldBuilder
 from world_builder.rasterizer import MapRasterizer
+from fastapi.responses import JSONResponse
 
 app = FastAPI(title="API for World Builder")
 
@@ -43,24 +44,21 @@ class HistoryResponse(BaseModel):
 
 async def run_world_generation_task(task_id: str, prompt: str):
     try:
-        #Check if we already have a world in memory
+        #Get Old State
         current_state = core.get_current_state()
         
         if current_state is None:
-            #Genesis: Generate New World
-            print(f"[{task_id}] No existing world. Running GENESIS with prompt: '{prompt}'")
+            print(f"[{task_id}] GENESIS: '{prompt}'")
             await core.create_world(prompt)
         else:
-            #Evolution: Update existing world
-            print(f"[{task_id}] World exists. Running EVOLUTION with instruction: '{prompt}'")
+            print(f"[{task_id}] EVOLUTION: '{prompt}'")
             await core.update_world(prompt)
             
-        #Get the NEW state (result of create or update)
+        #Get the new state
         new_state = core.get_current_state()
         if not new_state:
             raise Exception("World generation returned no state.")
 
-        #Rasterize the graph stored in the State
         print(f"[{task_id}] Rasterizing graph with {len(new_state.graph.features)} features...")
         
         #settings
@@ -68,10 +66,13 @@ async def run_world_generation_task(task_id: str, prompt: str):
         GRID_H = 64
         WORLD_EXTENT = 1000
 
-        #Rasterizer
-        rasterizer = MapRasterizer(grid_width=GRID_W, grid_height=GRID_H, world_extent=WORLD_EXTENT)
+        rasterizer = MapRasterizer(
+            grid_width=GRID_W, 
+            grid_height=GRID_H, 
+            world_extent=WORLD_EXTENT,
+            seed=new_state.seed 
+        )
         
-        #Returns the format { "globals": ..., "entities": [...] }
         full_world_data = rasterizer.rasterize_to_json(new_state.graph)
         
         print(f"[{task_id}] Rasterization complete. Entities: {len(full_world_data['entities'])}")
@@ -85,7 +86,6 @@ async def run_world_generation_task(task_id: str, prompt: str):
         tasks[task_id]["status"] = "failed"
         tasks[task_id]["result"] = {"error": str(e), "details": error_details}
     finally:
-        #print(f"[{task_id}] Task finished.")
         pass
 
 @app.post("/generate-map", response_model=Dict[str, str])
@@ -135,7 +135,12 @@ async def jump_history(node_id: str):
     GRID_W = 64
     GRID_H = 64
     WORLD_EXTENT = 1000
-    rasterizer = MapRasterizer(grid_width=GRID_W, grid_height=GRID_H, world_extent=WORLD_EXTENT)
+    rasterizer = MapRasterizer(
+        grid_width=GRID_W, 
+        grid_height=GRID_H, 
+        world_extent=WORLD_EXTENT, 
+        seed=current_state.seed
+    )
     full_world_data = rasterizer.rasterize_to_json(current_state.graph)
     return {"result": full_world_data}
 
@@ -143,3 +148,35 @@ async def jump_history(node_id: str):
 async def delete_history_node(node_id: str):
     core.delete_subtree(node_id)
     return {"message": "Subtree deleted"}
+
+@app.get("/download-world")
+async def download_world():
+    if not core.root_node_id:
+        raise HTTPException(status_code=400, detail="No world to save.")
+    
+    data = core.save_to_dict()
+    return JSONResponse(
+        content=data, 
+        headers={"Content-Disposition": "attachment; filename=fantasy_world.json"}
+    )
+
+@app.post("/upload-world")
+async def upload_world(payload: Dict[str, Any]):
+    success = core.load_from_dict(payload)
+    if not success:
+        raise HTTPException(status_code=400, detail="Invalid save file format.")
+    
+    current_state = core.get_current_state()
+    
+    GRID_W = 64
+    GRID_H = 64
+    WORLD_EXTENT = 1000
+    rasterizer = MapRasterizer(
+        grid_width=GRID_W, 
+        grid_height=GRID_H, 
+        world_extent=WORLD_EXTENT, 
+        seed=current_state.seed
+    )
+    full_world_data = rasterizer.rasterize_to_json(current_state.graph)
+
+    return {"message": "Loaded", "result": full_world_data}

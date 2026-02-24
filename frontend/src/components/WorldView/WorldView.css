@@ -49,6 +49,8 @@
   box-sizing: border-box;
   border: 0.5px solid rgba(81, 117, 60, 0.747);
   z-index: 1;
+  transition: background-image 0.4s ease-in-out;
+  image-rendering: pixelated;
 }
 
 .world-tile.is-highlighted {
@@ -90,30 +92,32 @@
   background-position: center bottom;
   position: absolute;
 
-  pointer-events: auto;   /* ⬅️ was none */
+  pointer-events: auto;
   cursor: pointer;
 
   box-sizing: border-box;
   transform: none;
   z-index: 5;
+
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
 }
 
 .world-object--city::after {
-  content: attr(data-name);
   position: absolute;
   left: 50%;
   top: 100%;
   transform: translateX(-50%);
   margin-top: 4px;
 
-  font-size: 0.9rem;           /* ⬅️ Increased from 0.55rem */
-  font-weight: 600;            /* ⬅️ Looks sharper */
+  font-size: 0.9rem; 
+  font-weight: 600;
   color: #ffffff;
 
   white-space: nowrap;
   text-shadow:
-    0 0 3px rgba(0, 0, 0, 0.9),   /* strong outline */
-    0 0 6px rgba(0, 0, 0, 0.7);   /* soft glow */
+    0 0 3px rgba(0, 0, 0, 0.9),
+    0 0 6px rgba(0, 0, 0, 0.7);
 }
 
 .world-view-placeholder {
@@ -182,6 +186,19 @@
   100% { opacity: 0; }   
 }
 
+@keyframes popIn {
+  0% {
+    transform: scale(0) translateY(10px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
 
 
 
@@ -193,7 +210,7 @@
   padding: 4px 8px;
   border-radius: 4px;
   pointer-events: none;
-  font-size: 14px;
+  font-size: 1.5rem;
   z-index: 1000;
   white-space: nowrap;
   transform: translate(0, 0);
@@ -219,7 +236,8 @@
   position: fixed;
   right: 20px;
   top: 80px;
-  width: 300px;
+  width: 500px;
+  max-width: 90vw;
   background: #1a1a1a;
   color: #eee;
   border: 1px solid #444;
@@ -240,7 +258,7 @@
   background: none;
   border: none;
   color: #fff;
-  font-size: 20px;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 @keyframes slideIn {

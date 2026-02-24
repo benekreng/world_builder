@@ -6,9 +6,11 @@ import html
 from pathlib import Path
 import os
 import copy 
+from typing import Dict, Any, Optional, Literal, List
 
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
 
 # Import models
 from .models import (
@@ -150,7 +152,7 @@ class WorldBuilder:
 
         new_state = WorldState(
             fluid_truth=response.fluid_ground_truth, 
-            graph=response.initial_graph,
+            graph=final_graph,
             prompt=prompt,
             step_type="genesis",
             parent_id=None
@@ -289,13 +291,37 @@ class WorldBuilder:
             graph=new_graph,
             prompt=user_prompt,
             step_type=step_type,
-            parent_id=current_state.id
+            parent_id=current_state.id,
+            seed=current_state.seed
         )
 
         self.nodes[new_state.id] = new_state
         self.current_node_id = new_state.id
 
         return new_state
+
+    def save_to_dict(self) -> Dict[str, Any]:
+        return {
+            "root_node_id": self.root_node_id,
+            "current_node_id": self.current_node_id,
+            "nodes": {
+                nid: node.model_dump() 
+                for nid, node in self.nodes.items()
+            }
+        }
+
+    def load_from_dict(self, data: Dict[str, Any]):
+        try:
+            self.nodes = {}
+            for nid, raw_node in data["nodes"].items():
+                self.nodes[nid] = WorldState(**raw_node)
+            
+            self.root_node_id = data.get("root_node_id")
+            self.current_node_id = data.get("current_node_id")
+            return True
+        except Exception as e:
+            print(f"Load failed: {e}")
+            return False
 
     #Renderer
     def render_svg(self, final_graph, width=1000, height=1000):

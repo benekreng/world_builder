@@ -2,6 +2,7 @@ from typing import List, Optional, Literal, Dict, Any, Union
 from pydantic import BaseModel, Field
 from enum import Enum
 import uuid
+import random
 
 # --- Types & Enums ---
 Category = Literal[
@@ -130,3 +131,4 @@ class WorldState(BaseModel):
     graph: FinalFeatureGraph
     prompt: str = ""
     step_type: str = "genesis"
+    seed: int = Field(default_factory=lambda: random.randint(0, 2**32))

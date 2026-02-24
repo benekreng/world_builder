@@ -5,13 +5,15 @@ from .models import FinalFeatureGraph
 from .road_generator import RoadGenerator
 
 class MapRasterizer:
-    def __init__(self, grid_width=64, grid_height=64, world_extent=1000):
+    def __init__(self, grid_width=64, grid_height=64, world_extent=1000, seed=None):
         self.width = grid_width
         self.height = grid_height
         self.scale_x = grid_width / world_extent
         self.scale_y = grid_height / world_extent
         
-        #Priority: Higher numbers draw on top of lower numbers
+        s = seed if seed is not None else random.randint(0, 100000)
+        self.rng = random.Random(s) 
+        
         self.PRIORITY = {
             "Region": 0, "Field": 1, "Marsh": 2, "Forest": 3,
             "MountainRange": 4, "Road": 5, "Lake": 6, 
@@ -105,24 +107,24 @@ class MapRasterizer:
         if category == "MountainRange":
             if is_deep:
                 return {"base": "mountain", "base_part": 1, "overlay": None, "overlay_part": 0}
-            is_snow = random.random() > 0.7
+            is_snow = self.rng.random() > 0.7
             return {"base": "mountain", "base_part": 1 if is_snow else 0, "overlay": None, "overlay_part": 0}
 
         #3. Marsh
         if category == "Marsh":
             overlay = None
             overlay_part = 0
-            if random.random() < 0.6: 
+            if self.rng.random() < 0.6: 
                 overlay = "tree_swamp"
-                overlay_part = random.randint(0, 1)
+                overlay_part = self.rng.randint(0, 1)
             return {"base": "swamp", "base_part": 0, "overlay": overlay, "overlay_part": overlay_part}
 
         #4. Forest
         if category == "Forest":
             overlay = None
             overlay_part = 0
-            if random.random() < 0.8:
-                overlay = random.choice(self.TREES_SEASONAL)
+            if self.rng.random() < 0.8:
+                overlay = self.rng.choice(self.TREES_SEASONAL)
                 overlay_part = 0
             return {"base": "ground", "base_part": 0, "overlay": overlay, "overlay_part": overlay_part}
 
@@ -133,9 +135,9 @@ class MapRasterizer:
 
         #6. Field/Region
         if category == "Field" or category == "Region":
-            r = random.random()
+            r = self.rng.random()
             if r < 0.05: 
-                return {"base": "ground", "base_part": 0, "overlay": "rockSimple", "overlay_part": random.randint(0, 2)}
+                return {"base": "ground", "base_part": 0, "overlay": "rockSimple", "overlay_part": self.rng.randint(0, 2)}
             if r < 0.08: 
                 return {"base": "ground", "base_part": 0, "overlay": "tree_oak", "overlay_part": 0}
             return {"base": "ground", "base_part": 0, "overlay": None, "overlay_part": 0}
@@ -248,7 +250,7 @@ class MapRasterizer:
                 if feature.category == "Settlement":
                     #Try vertical pair
                     if y < self.height - 1 and grid_final[y+1, x] == val and not occupied[y+1, x]:
-                        pair = random.choice(self.CITY_PAIRS)
+                        pair = self.rng.choice(self.CITY_PAIRS)
                         add_cell(feature.id, "Settlement", meta, {"x": x, "y": y, "prop": {"name": "city", "part": pair[0]}})
                         add_cell(feature.id, "Settlement", meta, {"x": x, "y": y+1, "prop": {"name": "city", "part": pair[1]}})
                         occupied[y, x] = True

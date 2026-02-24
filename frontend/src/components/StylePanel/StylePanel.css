@@ -14,7 +14,7 @@
 
 .style-panel-title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
 }
 
 .style-panel-history-buttons {
@@ -28,7 +28,7 @@
   border: 1px solid #ccc;
   background: #f7f7f7;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 1.5rem;
   color:#000000;
 }
 .style-history-btn:hover {
@@ -52,7 +52,7 @@
 
 .prompt-history-title {
   margin: 0 0 6px;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
@@ -73,7 +73,7 @@
 .prompt-history-item {
   display: flex;
   align-items: flex-start;
-  font-size: 0.8rem;
+  font-size: 1.5rem;
 }
 
 .prompt-history-index {
@@ -103,7 +103,7 @@
   border: none;
   background: none;
   color: #555;
-  font-size: 0.75rem;
+  font-size: 1.5rem;
   cursor: pointer;
   text-decoration: underline;
 }

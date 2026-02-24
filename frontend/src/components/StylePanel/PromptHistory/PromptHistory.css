@@ -10,13 +10,13 @@
 
 .prompt-history--empty {
   margin-top: 8px;
-  font-size: 0.8rem;
+  font-size: 1.5rem;
   color: #888;
 }
 
 .prompt-history-title {
   margin: 0 0 6px;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
@@ -38,7 +38,7 @@
 .prompt-history-item {
   display: flex;
   align-items: flex-start;
-  font-size: 0.8rem;
+  font-size: 1.5rem;
 }
 
 .prompt-history-index {
@@ -68,7 +68,7 @@
   border: none;
   background: none;
   color: #555;
-  font-size: 0.75rem;
+  font-size: 1.5rem;
   cursor: pointer;
   text-decoration: underline;
 }

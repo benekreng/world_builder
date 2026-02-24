@@ -18,8 +18,8 @@
   text-align: center;
 }
 
-.history-title { margin: 0; font-size: 1.1rem; color: #333; }
-.history-subtitle { margin: 0; font-size: 0.8rem; color: #888; font-style: italic; }
+.history-title { margin: 0; font-size: 1.5rem; color: #333; }
+.history-subtitle { margin: 0; font-size: 1.2rem; color: #888; font-style: italic; }
 
 .tree-viewport {
   flex: 1;
@@ -73,7 +73,7 @@
 
 .history-popup {
   position: absolute;
-  width: 220px;
+  width: 350px;
   background: white;
   border: 1px solid #ccc;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -85,6 +85,54 @@
   font-family: sans-serif;
 }
 
+.timeline-legend {
+  flex-shrink: 0;
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+  padding: 12px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.03);
+  z-index: 10;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.5rem;
+  color: #555;
+  font-family: sans-serif;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.legend-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #888;
+}
+.legend-dot.node-type-genesis { 
+  background-color: #fff; 
+  border-color: #d4a017; 
+}
+.legend-dot.node-type-add { 
+  background-color: #a8d5ba; 
+  border-color: #5c8a56; 
+}
+.legend-dot.node-type-edit { 
+  background-color: #a8cce6; 
+  border-color: #4f8cbf; 
+}
+.legend-dot.node-type-remove { 
+  background-color: #e6a8a8; 
+  border-color: #c25e5e; 
+}
+
 .popup-header { 
     background: #f4f4f4; 
     padding: 8px; 
@@ -94,18 +142,18 @@
 }
 .popup-title { 
     font-weight: bold; 
-    font-size: 0.8rem; 
+    font-size: 1.5rem; 
 }
 .popup-close-x { 
     border: none; 
-    background: none; 
+    background: rgb(37, 6, 6); 
     cursor: pointer; 
 }
 .popup-body { 
     padding: 10px; 
 }
 .popup-prompt { 
-    font-size: 0.8rem; 
+    font-size: 1.5rem; 
     font-style: italic; 
     max-height: 100px; 
     overflow-y: auto; 
@@ -121,7 +169,7 @@
     flex: 1; 
     padding: 5px; 
     cursor: pointer; 
-    font-size: 0.75rem; 
+    font-size: 1.5rem; 
     border-radius: 3px; 
     border: 1px solid #ccc; 
 }

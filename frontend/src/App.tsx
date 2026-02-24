@@ -5,7 +5,7 @@ import { PromptBar } from "./components/PromptBar/PromptBar";
 import { HistoryTree } from "./components/HistoryTree/HistoryTree";
 import { type World } from "./world";
 import { mapToWorld } from "./world.mapper";
-import { generateMap, resetWorld, fetchHistory, fetchNodePrompts, jumpToNode, deleteNode, type HistoryNode } from "./api/client";
+import { generateMap, resetWorld, fetchHistory, fetchNodePrompts, jumpToNode, deleteNode, type HistoryNode, downloadWorld, uploadWorld } from "./api/client";
 import "./App.css";
 
 export type WorldStyle = "default";
@@ -29,6 +29,30 @@ function App() {
       setActiveNodeId(data.current_node_id);
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      await downloadWorld();
+    } catch (e) { console.error(e); }
+  };
+  const handleLoad = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setBusy(true);
+    try {
+        const response = await uploadWorld(file);
+        setWorld(mapToWorld(response.result));
+        setSelectedNodeId(null);
+        await refreshHistory();
+    } catch(err) {
+        console.error("Load failed", err);
+        alert("Failed to load file. Is it a valid JSON?");
+    } finally {
+        setBusy(false);
+        e.target.value = ""; 
     }
   };
 
@@ -154,7 +178,27 @@ function App() {
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
-            {/*Reset button*/}
+            
+            {/*Save Button*/}
+            {world && (
+                <button onClick={handleSave} disabled={busy} className="secondary-btn" style={{cursor: 'pointer'}}>
+                    💾 Save
+                </button>
+            )}
+
+            {/*Load Button*/}
+            <label className="secondary-btn" style={{cursor: busy ? 'wait' : 'pointer', display: 'inline-block', padding: '8px 12px', background: '#e0e0e0', borderRadius: '4px'}}>
+                📂 Load
+                <input 
+                    type="file" 
+                    accept=".json" 
+                    onChange={handleLoad} 
+                    style={{display: 'none'}} 
+                    disabled={busy}
+                />
+            </label>
+
+            {/*Reset Button*/}
             <button 
               onClick={handleReset} 
               disabled={busy} 

@@ -4,6 +4,7 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  font-size: 1.5rem;
 }
 
 .app-header {
@@ -20,12 +21,10 @@
 
 .app-title { 
   margin: 0; 
-  font-size: 1.25rem; 
   color: #2c3e50; 
 }
 .app-subtitle { 
   margin: 0; 
-  font-size: 0.85rem; 
   color: #666; 
 }
 
@@ -46,11 +45,11 @@
 }
 
 .history-column {
-  width: 400px;
-  flex: 0 0 400px;
+  width: 650px;
+  flex: 0 0 650px;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #bbb;
+  border-left: 2px solid #bbb;
   background: #fdfcf8;
   overflow-y: auto;
   overflow-x: hidden;
@@ -59,11 +58,12 @@
 }
 
 .tools-column {
-  width: 300px;
-  flex: 0 0 300px;
+  width: 600px;
+  flex: 0 0 600px;
   display: flex;
   flex-direction: column;
   border-left: 1px solid #ccc;
+  padding: 10px;
   background: #f4f1ea;
   overflow-y: auto;
   z-index: 6;

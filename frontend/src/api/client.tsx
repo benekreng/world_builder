@@ -85,3 +85,32 @@ export async function deleteNode(nodeId: string) {
   if (!res.ok) throw new Error("Failed to delete history node");
   return res.json();
 }
+
+export async function downloadWorld() {
+  const res = await fetch(`${API_BASE_URL}/download-world`);
+  if (!res.ok) throw new Error("Failed to download");
+  
+  // Convert response to blob and trigger download
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `my_fantasy_world_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+export async function uploadWorld(file: File) {
+  const text = await file.text();
+  const json = JSON.parse(text);
+
+  const res = await fetch(`${API_BASE_URL}/upload-world`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(json),
+  });
+
+  if (!res.ok) throw new Error("Failed to upload");
+  return res.json();
+}

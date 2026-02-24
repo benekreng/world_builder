@@ -184,7 +184,7 @@ export const HistoryTree: React.FC<HistoryTreeProps> = ({
             <div 
                 className="history-popup"
                 style={{
-                    left: Math.min(selectedLayoutNode.x + 20, svgWidth - 230), 
+                    left: Math.min(selectedLayoutNode.x + 20, svgWidth - 120), 
                     top: selectedLayoutNode.y - 10
                 }}
                 onClick={(e) => e.stopPropagation()}
@@ -213,6 +213,25 @@ export const HistoryTree: React.FC<HistoryTreeProps> = ({
                 </div>
             </div>
         )}
+      </div>
+      {/*Legend*/}
+      <div className="timeline-legend">
+        <div className="legend-item">
+            <div className="legend-dot node-type-genesis" />
+            <span>Genesis</span>
+        </div>
+        <div className="legend-item">
+            <div className="legend-dot node-type-add" />
+            <span>Add</span>
+        </div>
+        <div className="legend-item">
+            <div className="legend-dot node-type-edit" />
+            <span>Edit</span>
+        </div>
+        <div className="legend-item">
+            <div className="legend-dot node-type-remove" />
+            <span>Remove</span>
+        </div>
       </div>
     </div>
   );
