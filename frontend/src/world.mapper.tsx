@@ -1,5 +1,5 @@
 import type { WorldDto } from "./world.dto";
-import type { World, WorldObject, Tile, TileType } from "./world";
+import type { World, WorldObject, TileType } from "./world";
 import { createBaseGrid } from "./world";
 
 const TERRAIN_PROPS = new Set(["ground", "water", "field", "path", "sand", "snow", "mountain", "swamp"]);

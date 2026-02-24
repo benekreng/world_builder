@@ -1,5 +1,4 @@
 import type { WorldDto } from "./world.dto";
-import * as Mapper from "./world.mapper";
 
 export type TileType = "ground" | "water" | "mountain" | "field" | "path" | "sand" | "snow";
 
