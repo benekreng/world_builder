@@ -1,6 +1,6 @@
 import { type WorldDto } from "../world.dto";
 
-const API_BASE_URL = "http://localhost:8000"; 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export const generateMap = async (prompt: string): Promise<WorldDto> => {
   const url = `${API_BASE_URL}/generate-map`;
