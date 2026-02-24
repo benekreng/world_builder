@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import type { HistoryNode } from "../../api/client";
 import "./HistoryTree.css";
 

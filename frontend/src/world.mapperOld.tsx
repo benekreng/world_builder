@@ -26,6 +26,7 @@ export function mapToWorld(worldDto: WorldDto): World {
         height,
         tiles: [],
         objects,
+        meta: {},
     };
 
     return world;
