@@ -28,7 +28,8 @@ from pathlib import Path
 # Wrapper for all models we may select
 class LLMService:
     def __init__(self):
-        self.open_router_key = os.environ['OPEN_ROUTER_API_KEY']
+        #self.open_router_key = os.environ['OPEN_ROUTER_API_KEY']
+        self.open_router_key = "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"
         # strip possible leading "Bearer " if someone exported the whole header value
         if isinstance(self.open_router_key, str) and self.open_router_key.lower().startswith("bearer "):
             self.open_router_key = self.open_router_key.split(None, 1)[1]

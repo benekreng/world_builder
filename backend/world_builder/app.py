@@ -61,7 +61,8 @@ class WorldBuilder:
     def __init__(self):
         self._running = False
         self.llm_service = LLMService()
-        self.llm = self.llm_service.get_model("google/gemini-3-pro-preview")
+        #self.llm = self.llm_service.get_model("google/gemini-3.1-pro-preview")
+        self.llm = self.llm_service.get_model("google/gemini-3-flash-preview")
         self.map_pipeline = MapPipeline(self.llm)
 
         #History State Management

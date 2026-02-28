@@ -42,7 +42,7 @@ class MapRasterizer:
 
     def _scale_point(self, x, y, r):
         sx = x * self.scale_x
-        sy = y * self.scale_y
+        sy = self.height - (y * self.scale_y)
         sr = r * max(self.scale_x, self.scale_y)
         return sx, sy, sr
 
